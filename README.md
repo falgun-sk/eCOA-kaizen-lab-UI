@@ -7,10 +7,10 @@ A modern, user-friendly interface for Electronic Clinical Outcome Assessment (eC
 - Clean and intuitive login interface
 - White and light orange color theme
 - Responsive design
+- Username and password authentication
 - Form validation
-- Social authentication options (Google, GitHub)
 - Password visibility toggle
-- Remember me functionality
+- Support contact information
 
 ## Tech Stack
 
@@ -24,6 +24,12 @@ A modern, user-friendly interface for Electronic Clinical Outcome Assessment (eC
 
 ```
 eCOA-kaizen-lab-UI/
+├── docs/
+│   ├── eCOA_Database_Schema.pdf
+│   ├── eCOA_Solutions_PRD.pdf
+│   ├── eCOA_Technical_Spec.pdf
+│   ├── eCOA_User_Stories.pdf
+│   └── eCOA_Wireframe_Guide.pdf
 ├── public/
 │   └── vite.svg
 ├── src/
@@ -88,13 +94,13 @@ The application uses a white and light orange color palette:
 
 ## Documentation
 
-The project includes comprehensive documentation:
+The project includes comprehensive documentation in the `docs/` folder:
 
-- `eCOA_Solutions_PRD.pdf` - Product Requirements Document
-- `eCOA_Technical_Spec.pdf` - Technical Specifications
-- `eCOA_User_Stories.pdf` - User Stories
-- `eCOA_Database_Schema.pdf` - Database Schema
-- `eCOA_Wireframe_Guide.pdf` - Wireframe Guide
+- `docs/eCOA_Solutions_PRD.pdf` - Product Requirements Document
+- `docs/eCOA_Technical_Spec.pdf` - Technical Specifications
+- `docs/eCOA_User_Stories.pdf` - User Stories
+- `docs/eCOA_Database_Schema.pdf` - Database Schema
+- `docs/eCOA_Wireframe_Guide.pdf` - Wireframe Guide
 
 ## Contributing
 
