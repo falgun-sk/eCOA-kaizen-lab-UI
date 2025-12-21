@@ -1,0 +1,398 @@
+/**
+ * Role-based Permissions Matrix
+ * Based on the Roles and Access PDF specification
+ */
+
+import { ROLES } from '../constants/roles'
+
+// Permission categories
+export const PERMISSION_CATEGORIES = {
+  STUDY_SETUP: 'Study Setup & Build',
+  REVIEW: 'Review & Collaboration',
+  UAT: 'UAT & Testing',
+  DEPLOYMENT: 'Deployment',
+  MAINTENANCE: 'Live Study Operations',
+  PLATFORM: 'Platform & Governance'
+}
+
+// Permission levels
+export const PERMISSION_LEVELS = {
+  ALLOWED: 'allowed',
+  NOT_ALLOWED: 'not_allowed',
+  READ_ONLY: 'read_only',
+  APPROVAL_REQUIRED: 'approval_required'
+}
+
+// Comprehensive permissions matrix
+export const PERMISSIONS_MATRIX = {
+  // STUDY SETUP & BUILD
+  [PERMISSION_CATEGORIES.STUDY_SETUP]: [
+    {
+      capability: 'Create Study',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Build Forms (Drag & Drop)',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Configure Logic / Rules',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Configure Visit Schedule',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Create / Manage Templates',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Preview App UI',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.READ_ONLY
+      }
+    }
+  ],
+
+  // REVIEW & COLLABORATION
+  [PERMISSION_CATEGORIES.REVIEW]: [
+    {
+      capability: 'View Build',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Comment on Screens',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Respond to Comments',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Approve Design',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.APPROVAL_REQUIRED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.APPROVAL_REQUIRED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.APPROVAL_REQUIRED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    }
+  ],
+
+  // UAT & TESTING
+  [PERMISSION_CATEGORIES.UAT]: [
+    {
+      capability: 'Push Study to UAT',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Execute Test Scenarios',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Create Issue Logs',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    }
+  ],
+
+  // DEPLOYMENT
+  [PERMISSION_CATEGORIES.DEPLOYMENT]: [
+    {
+      capability: 'View Deployment Readiness',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Trigger Deployment',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    }
+  ],
+
+  // MAINTENANCE (POST-DEPLOYMENT)
+  [PERMISSION_CATEGORIES.MAINTENANCE]: [
+    {
+      capability: 'View Study Status',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.READ_ONLY
+      }
+    },
+    {
+      capability: 'Trigger Change Request',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Assign Sites',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Assign Site Users',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    },
+    {
+      capability: 'Track Device Shipments',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.READ_ONLY,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.NOT_ALLOWED
+      }
+    }
+  ],
+
+  // PLATFORM & GOVERNANCE
+  [PERMISSION_CATEGORIES.PLATFORM]: [
+    {
+      capability: 'Manage Users',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.ALLOWED
+      }
+    },
+    {
+      capability: 'Assign Roles',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.ALLOWED
+      }
+    },
+    {
+      capability: 'Manage Licenses',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.ALLOWED
+      }
+    },
+    {
+      capability: 'View Audit Trails',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.ALLOWED
+      }
+    },
+    {
+      capability: 'Export Audit Logs',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.ALLOWED
+      }
+    },
+    {
+      capability: 'Access System Settings',
+      permissions: {
+        [ROLES.PROJECT_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.STUDY_DESIGNER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.BUILD_REVIEWER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.UAT_MEMBER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.SITE_MANAGER]: PERMISSION_LEVELS.NOT_ALLOWED,
+        [ROLES.ADMIN]: PERMISSION_LEVELS.ALLOWED
+      }
+    }
+  ]
+}
+
+/**
+ * Get all permissions for a specific role
+ * @param {string} role - Role constant
+ * @returns {Object} Permissions grouped by category
+ */
+export const getPermissionsForRole = (role) => {
+  const result = {}
+
+  Object.entries(PERMISSIONS_MATRIX).forEach(([category, capabilities]) => {
+    result[category] = capabilities.map(item => ({
+      capability: item.capability,
+      permission: item.permissions[role] || PERMISSION_LEVELS.NOT_ALLOWED
+    }))
+  })
+
+  return result
+}
+
+/**
+ * Get permission icon and color based on level
+ * @param {string} level - Permission level
+ * @returns {Object} Icon component and color classes
+ */
+export const getPermissionDisplay = (level) => {
+  switch (level) {
+    case PERMISSION_LEVELS.ALLOWED:
+      return {
+        icon: '✅',
+        label: 'Allowed',
+        bgColor: 'bg-green-50',
+        textColor: 'text-green-700',
+        borderColor: 'border-green-200'
+      }
+    case PERMISSION_LEVELS.READ_ONLY:
+      return {
+        icon: '🔒',
+        label: 'Read Only',
+        bgColor: 'bg-yellow-50',
+        textColor: 'text-yellow-700',
+        borderColor: 'border-yellow-200'
+      }
+    case PERMISSION_LEVELS.APPROVAL_REQUIRED:
+      return {
+        icon: '⚠',
+        label: 'Approval Required',
+        bgColor: 'bg-orange-50',
+        textColor: 'text-orange-700',
+        borderColor: 'border-orange-200'
+      }
+    case PERMISSION_LEVELS.NOT_ALLOWED:
+    default:
+      return {
+        icon: '❌',
+        label: 'Not Allowed',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-700',
+        borderColor: 'border-red-200'
+      }
+  }
+}
