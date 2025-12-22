@@ -21,7 +21,17 @@ import StatusBadge from './StatusBadge'
 const UserTable = ({ users, onEdit, onDelete, onViewPermissions, isLoading }) => {
   // Format date for display
   const formatDate = (dateString) => {
+    if (!dateString) {
+      return 'Never'
+    }
+
     const date = new Date(dateString)
+
+    // Check for invalid date
+    if (isNaN(date.getTime())) {
+      return 'Never'
+    }
+
     const now = new Date()
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60))
 
@@ -182,7 +192,7 @@ const UserTable = ({ users, onEdit, onDelete, onViewPermissions, isLoading }) =>
                 <StatusBadge status={user.status} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {formatDate(user.lastActive)}
+                {formatDate(user.lastLogin || user.lastActive)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm sticky right-0 bg-white shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.1)]">
                 <div className="flex items-center justify-end space-x-2">
