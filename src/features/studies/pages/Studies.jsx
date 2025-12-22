@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { studiesAPI } from '../../../shared/services/api'
+import { studiesApi } from '../../../shared/services/api'
 
 /**
  * Studies List Page
@@ -92,7 +92,7 @@ const Studies = () => {
       setIsLoading(true)
       setError(null)
       try {
-        const data = await studiesAPI.getAll({ search: searchQuery })
+        const data = await studiesApi.getStudies({ search: searchQuery })
         setStudies(data)
       } catch (err) {
         console.error('Error fetching studies:', err)

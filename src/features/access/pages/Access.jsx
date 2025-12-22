@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { usersAPI } from '../../../shared/services/api'
+import { usersApi } from '../../../shared/services/api'
 import { getMockUsers, createMockUser, updateMockUser, deleteMockUser } from '../data/mockUsers'
 import { getAllRoles, getAllStatuses } from '../constants/roles'
 import UserTable from '../components/UserTable'
@@ -62,8 +62,9 @@ const Access = () => {
     setError(null)
     try {
       // Try to fetch from API (will use mock data fallback)
-      const data = await usersAPI.getAll()
-      setUsers(data)
+      const response = await usersApi.getUsers()
+      // API returns { data: [...], total, page, pageSize }
+      setUsers(response.data || [])
     } catch (err) {
       console.error('Error fetching users:', err)
       // Fallback to mock data
@@ -116,7 +117,7 @@ const Access = () => {
     try {
       // Try API first
       try {
-        const newUser = await usersAPI.create(userData)
+        const newUser = await usersApi.createUser(userData)
         setUsers([newUser, ...users])
       } catch (apiError) {
         // Fallback to mock data
@@ -135,12 +136,18 @@ const Access = () => {
     try {
       // Try API first
       try {
-        const updatedUser = await usersAPI.update(userId, userData)
-        setUsers(users.map((u) => (u.id === userId ? updatedUser : u)))
+        const updatedUser = await usersApi.updateUser(userId, userData)
+        // Merge updated data with existing user to preserve all fields
+        setUsers(users.map((u) => (u.id === userId ? { ...u, ...updatedUser, ...userData } : u)))
       } catch (apiError) {
         // Fallback to mock data
         const updatedUser = updateMockUser(userId, userData)
-        setUsers(users.map((u) => (u.id === userId ? updatedUser : u)))
+        if (updatedUser) {
+          setUsers(users.map((u) => (u.id === userId ? { ...u, ...updatedUser, ...userData } : u)))
+        } else {
+          // If updateMockUser returns null, just update with the form data
+          setUsers(users.map((u) => (u.id === userId ? { ...u, ...userData } : u)))
+        }
       }
       setShowEditModal(false)
       setSelectedUser(null)
@@ -157,7 +164,7 @@ const Access = () => {
     try {
       // Try API first
       try {
-        await usersAPI.delete(selectedUser.id)
+        await usersApi.deleteUser(selectedUser.id)
         setUsers(users.filter((u) => u.id !== selectedUser.id))
       } catch (apiError) {
         // Fallback to mock data
