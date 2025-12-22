@@ -1,0 +1,10 @@
+// Access Components Barrel Export
+export { default as AddUserModal } from './AddUserModal'
+export { default as DeleteConfirmModal } from './DeleteConfirmModal'
+export { default as EditUserModal } from './EditUserModal'
+export { default as PermissionsView } from './PermissionsView'
+export { default as RoleBadge } from './RoleBadge'
+export { default as RolePermissionsView } from './RolePermissionsView'
+export { default as StatusBadge } from './StatusBadge'
+export { default as UserPermissionsModal } from './UserPermissionsModal'
+export { default as UserTable } from './UserTable'

@@ -1,0 +1,10 @@
+// Studies Pages Barrel Export
+export { default as CreateStudy } from './CreateStudy'
+export { default as Docs } from './Docs'
+export { default as FormPreview } from './FormPreview'
+export { default as PendingActions } from './PendingActions'
+export { default as Reports } from './Reports'
+export { default as Studies } from './Studies'
+export { default as StudyBuild } from './StudyBuild'
+export { default as StudyDetail } from './StudyDetail'
+export { default as UAT } from './UAT'
