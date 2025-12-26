@@ -46,17 +46,17 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
-      <div className="flex items-center justify-between">
+    <header className="bg-white/30 backdrop-blur-sm border-b border-transparent px-4 py-2 sticky top-0 z-40">
+      <div className="flex items-center justify-between max-w-full">
         {/* Left side - Hamburger Menu */}
         <div className="flex items-center">
           <button
             onClick={onToggleSidebar}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100/60 rounded-md transition-colors"
             aria-label="Toggle sidebar"
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -72,24 +72,24 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
         </div>
 
         {/* Center - Company Name / Logo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-sm">
             <span className="text-white font-bold text-sm">eC</span>
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">eCOA</h1>
+            <h1 className="text-sm font-semibold text-gray-900">eCOA</h1>
           </div>
         </div>
 
         {/* Right side - Profile */}
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           {/* Profile Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center space-x-3 p-1.5 hover:bg-gray-100/60 rounded-md transition-colors"
             >
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xs">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="text-left hidden md:block">

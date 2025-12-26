@@ -93,7 +93,9 @@ const Studies = () => {
       setError(null)
       try {
         const data = await studiesApi.getStudies({ search: searchQuery })
-        setStudies(data)
+        // studiesApi returns a StudyListResponse { data, total, page, pageSize }
+        // but the component expects an array of studies. Normalize here.
+        setStudies(Array.isArray(data) ? data : data.data || [])
       } catch (err) {
         console.error('Error fetching studies:', err)
         // Fallback to mock data
@@ -113,7 +115,10 @@ const Studies = () => {
 
   // Apply filters
   useEffect(() => {
-    let result = [...studies]
+    // Ensure `studies` is an array before operating on it
+    const base = Array.isArray(studies) ? studies : []
+
+    let result = [...base]
 
     if (statusFilter !== 'all') {
       result = result.filter((study) => study.status === statusFilter)

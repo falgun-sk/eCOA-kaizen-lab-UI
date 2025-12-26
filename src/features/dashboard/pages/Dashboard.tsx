@@ -108,7 +108,9 @@ const Dashboard = () => {
         }
 
         const data = await studiesApi.getStudies({ search: searchQuery })
-        setStudies(data as Study[])
+        // studiesApi returns StudyListResponse { data, total, page, pageSize }
+        // normalize to an array for the component
+        setStudies(Array.isArray(data) ? data : (data && (data as any).data) || [])
       } catch (err) {
         console.error('Error fetching studies:', err)
         const mockData = getMockStudies()

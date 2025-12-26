@@ -105,44 +105,47 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps) => {
 
   return (
     <div
-      className={`flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ${
+      className={`flex flex-col bg-white/30 backdrop-blur-sm border-r border-transparent transition-all duration-300 ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div className="flex items-center justify-between px-4 h-12 border-b border-transparent">
         {!isCollapsed && (
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">eC</span>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-sm">
+              <span className="text-white font-semibold text-sm">eC</span>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">eCOA</h1>
-              <p className="text-xs text-gray-500">Kaizen Lab</p>
+            <div className="flex flex-col justify-center leading-none">
+              <h1 className="text-sm font-semibold text-gray-900">eCOA</h1>
+              <p className="text-xs text-gray-500 -mt-0.5">Kaizen Lab</p>
             </div>
           </div>
         )}
         {isCollapsed && (
-          <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mx-auto">
-            <span className="text-white font-bold text-sm">eC</span>
+          <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mx-auto shadow-sm">
+            <span className="text-white font-semibold text-sm">eC</span>
           </div>
         )}
       </div>
-
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-2">
+      <nav className="flex-1 overflow-y-auto py-2">
+        <ul className="space-y-1 px-4">
           {navigationItems.map((item) => (
             <li key={item.id}>
               <Link
                 to={item.path}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                className={`flex items-center ${
+                  isCollapsed ? 'justify-center px-0' : 'space-x-3 px-4'
+                } py-2.5 rounded-lg transition-colors duration-150 ease-in-out ${
                   isActive(item.path)
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
-                    : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow'
+                    : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600 hover:shadow-sm'
                 }`}
                 title={isCollapsed ? item.label : ''}
               >
-                <span className={isActive(item.path) ? 'text-white' : ''}>
-                  {icons[item.icon as IconName]}
+                <span className={isActive(item.path) ? 'text-white' : 'text-gray-600'}>
+                  <span className={`w-6 h-6 flex items-center ${isCollapsed ? 'justify-center mx-auto' : 'justify-center'}`}>
+                    {icons[item.icon as IconName]}
+                  </span>
                 </span>
                 {!isCollapsed && (
                   <>
@@ -161,7 +164,7 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps) => {
       </nav>
 
       {user && !isCollapsed && (
-        <div className="p-4 border-t border-gray-200">
+        <div className="px-4 py-3 border-t border-transparent">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
               {user.name.charAt(0).toUpperCase()}
@@ -175,7 +178,7 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps) => {
       )}
 
       {user && isCollapsed && (
-        <div className="p-4 border-t border-gray-200 flex justify-center">
+        <div className="px-4 py-3 border-t border-transparent flex justify-center">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
             {user.name.charAt(0).toUpperCase()}
           </div>
