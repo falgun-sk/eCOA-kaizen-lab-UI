@@ -67,10 +67,6 @@ const CreateStudy = () => {
       newErrors.protocolId = 'Protocol ID is required'
     }
 
-    if (!formData.phase) {
-      newErrors.phase = 'Study phase is required'
-    }
-
     if (!formData.sponsor.trim()) {
       newErrors.sponsor = 'Sponsor is required'
     }
@@ -238,7 +234,7 @@ const CreateStudy = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="phase" className="block text-sm font-medium text-gray-700 mb-2">
-                    Study Phase <span className="text-red-500">*</span>
+                    Study Phase
                   </label>
                   <select
                     id="phase"

@@ -6,7 +6,7 @@ import { ROLES } from '../../features/access/constants/roles'
 const DashboardLayout = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
   const { hasRole } = usePermission()
 
   const navigation = [
