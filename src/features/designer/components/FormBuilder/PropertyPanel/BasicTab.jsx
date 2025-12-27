@@ -83,6 +83,11 @@ const BasicTab = ({ component, onUpdateComponent, onUpdateConfig }) => {
       {component.type === 'file' && (
         <FileConfig component={component} onUpdateConfig={onUpdateConfig} />
       )}
+
+      {/* VAS Scale specific options */}
+      {component.type === 'vas' && (
+        <VASConfig component={component} onUpdateConfig={onUpdateConfig} />
+      )}
     </div>
   )
 }
@@ -241,6 +246,61 @@ const FileConfig = ({ component, onUpdateConfig }) => (
         className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
       />
       <label htmlFor="multipleFiles" className="text-xs text-gray-700">Allow multiple files</label>
+    </div>
+  </div>
+)
+
+const VASConfig = ({ component, onUpdateConfig }) => (
+  <div className="space-y-4 border-t border-gray-200 pt-4">
+    <div>
+      <label className="block text-xs font-medium text-gray-700 mb-2">Scale Range</label>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs text-gray-600 mb-1">Min Value</label>
+          <input
+            type="number"
+            value={component.config?.vasMin !== undefined ? component.config.vasMin : 0}
+            onChange={(e) => onUpdateConfig('vasMin', parseInt(e.target.value))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-600 mb-1">Max Value</label>
+          <input
+            type="number"
+            value={component.config?.vasMax !== undefined ? component.config.vasMax : 10}
+            onChange={(e) => onUpdateConfig('vasMax', parseInt(e.target.value))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+      </div>
+      <p className="text-xs text-gray-500 mt-1">Default range: 0-10</p>
+    </div>
+
+    <div>
+      <label className="block text-xs font-medium text-gray-700 mb-2">Orientation</label>
+      <div className="space-y-2">
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="radio"
+            name="vasOrientation"
+            checked={component.config?.vasOrientation === 'horizontal' || !component.config?.vasOrientation}
+            onChange={() => onUpdateConfig('vasOrientation', 'horizontal')}
+            className="text-orange-500 focus:ring-orange-500"
+          />
+          <span className="ml-2 text-sm text-gray-700">Horizontal (default)</span>
+        </label>
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="radio"
+            name="vasOrientation"
+            checked={component.config?.vasOrientation === 'vertical'}
+            onChange={() => onUpdateConfig('vasOrientation', 'vertical')}
+            className="text-orange-500 focus:ring-orange-500"
+          />
+          <span className="ml-2 text-sm text-gray-700">Vertical</span>
+        </label>
+      </div>
     </div>
   </div>
 )

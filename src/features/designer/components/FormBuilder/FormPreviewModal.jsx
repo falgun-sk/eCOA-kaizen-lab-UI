@@ -315,24 +315,52 @@ const FieldInput = ({ component, value, hasError, onChange }) => {
         />
       )
 
-    case 'vas':
+    case 'vas': {
+      const minValue = component.config?.vasMin !== undefined ? component.config.vasMin : 0
+      const maxValue = component.config?.vasMax !== undefined ? component.config.vasMax : 10
+      const isVertical = component.config?.vasOrientation === 'vertical'
+      const midValue = minValue + Math.floor((maxValue - minValue) / 2)
+
+      if (isVertical) {
+        return (
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-center h-64 justify-between">
+              <span className="text-xs text-gray-500">{maxValue}</span>
+              <input
+                type="range"
+                min={minValue}
+                max={maxValue}
+                value={value || midValue}
+                onChange={(e) => onChange(e.target.value)}
+                orient="vertical"
+                className="h-48 cursor-pointer"
+                style={{ writingMode: 'bt-lr', WebkitAppearance: 'slider-vertical', width: '8px' }}
+              />
+              <span className="text-xs text-gray-500">{minValue}</span>
+            </div>
+            <span className="text-sm font-medium text-orange-600">{value || midValue}</span>
+          </div>
+        )
+      }
+
       return (
         <div>
           <input
             type="range"
-            min="0"
-            max="10"
-            value={value || 5}
+            min={minValue}
+            max={maxValue}
+            value={value || midValue}
             onChange={(e) => onChange(e.target.value)}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>0 - No Pain</span>
-            <span className="font-medium text-orange-600">{value || 5}</span>
-            <span>10 - Worst Pain</span>
+            <span>{minValue}</span>
+            <span className="font-medium text-orange-600">{value || midValue}</span>
+            <span>{maxValue}</span>
           </div>
         </div>
       )
+    }
 
     case 'image':
       return (
