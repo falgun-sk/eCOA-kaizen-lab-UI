@@ -30,7 +30,7 @@ const DesignerStudyDetail = () => {
               protocolId: foundStudy.protocolId,
               version: 'V1.0',
               phase: foundStudy.phase,
-              status: foundStudy.status || 'Draft',
+              status: foundStudy.status || 'Design',
               lastModified: new Date(foundStudy.createdAt).toLocaleDateString('en-GB', {
                 day: '2-digit',
                 month: 'short',
@@ -290,25 +290,23 @@ const DesignerStudyDetail = () => {
   // Study status workflow
   const getStatusColor = (status) => {
     const colors = {
-      'Draft': 'bg-gray-100 text-gray-700 border-gray-300',
-      'Design': 'bg-gray-100 text-gray-700 border-gray-300', // Same as Draft
+      'Design': 'bg-gray-100 text-gray-700 border-gray-300',
       'Review': 'bg-blue-100 text-blue-700 border-blue-300',
       'UAT': 'bg-amber-100 text-amber-700 border-amber-300',
       'Approved': 'bg-green-100 text-green-700 border-green-300'
     }
-    return colors[status] || colors['Draft']
+    return colors[status] || colors['Design']
   }
 
   const getNextStatus = (currentStatus) => {
     const workflow = {
-      'Draft': 'Review',
-      'Design': 'Review', // Handle legacy 'Design' status
+      'Design': 'Review',
       'Review': 'UAT',
       'UAT': 'Approved',
       'Approved': null
     }
-    // If status is not in workflow, treat as Draft
-    return workflow[currentStatus] !== undefined ? workflow[currentStatus] : workflow['Draft']
+    // If status is not in workflow, treat as Design
+    return workflow[currentStatus] !== undefined ? workflow[currentStatus] : workflow['Design']
   }
 
   const handleStatusChange = (newStatus) => {
@@ -548,7 +546,7 @@ const DesignerStudyDetail = () => {
                     study.status === 'Review' ? 'bg-blue-500' :
                     'bg-gray-400'
                   }`}></span>
-                  {study.status === 'Design' ? 'Draft' : study.status}
+                  {study.status}
                 </span>
               </div>
               <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
@@ -575,16 +573,16 @@ const DesignerStudyDetail = () => {
                   Submit for {getNextStatus(study.status)}
                 </button>
               )}
-              {study.status !== 'Draft' && study.status !== 'Design' && (
+              {study.status !== 'Design' && (
                 <button
-                  onClick={() => handleStatusChange('Draft')}
+                  onClick={() => handleStatusChange('Design')}
                   className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-colors"
-                  title="Revert to Draft"
+                  title="Revert to Design"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                   </svg>
-                  Revert to Draft
+                  Revert to Design
                 </button>
               )}
             </div>
@@ -615,7 +613,7 @@ const DesignerStudyDetail = () => {
         </div>
 
         {/* Info Message when no forms exist */}
-        {forms.length === 0 && (study.status === 'Draft' || study.status === 'Design') && (
+        {forms.length === 0 && study.status === 'Design' && (
           <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start">
             <svg className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

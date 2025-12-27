@@ -15,7 +15,7 @@ const DesignerDashboard = () => {
       studyCode: 'S1',
       assignedStudies: 'Study1',
       ongoingTasks: 'Design',
-      studyState: 'Draft',
+      studyState: 'Design',
       lastModified: '16-Dec-2025'
     },
     {
@@ -24,7 +24,7 @@ const DesignerDashboard = () => {
       studyCode: 'S2',
       assignedStudies: 'Study2',
       ongoingTasks: 'Review',
-      studyState: 'Draft',
+      studyState: 'Design',
       lastModified: '15-Dec-2025'
     },
     {
@@ -56,7 +56,7 @@ const DesignerDashboard = () => {
             studyCode: study.code || study.protocolId || 'N/A',
             assignedStudies: study.name,
             ongoingTasks: 'Design',
-            studyState: study.status || 'Draft',
+            studyState: study.status || 'Design',
             lastModified: new Date(study.createdAt).toLocaleDateString('en-GB', {
               day: '2-digit',
               month: 'short',
@@ -81,12 +81,12 @@ const DesignerDashboard = () => {
 
   const getStateColor = (state) => {
     const colors = {
-      'Draft': 'bg-gray-50 text-gray-700 border-gray-200',
+      'Design': 'bg-gray-50 text-gray-700 border-gray-200',
       'Review': 'bg-blue-50 text-blue-700 border-blue-200',
       'UAT': 'bg-amber-50 text-amber-700 border-amber-200',
       'Approved': 'bg-green-50 text-green-700 border-green-200'
     }
-    return colors[state] || colors['Draft']
+    return colors[state] || colors['Design']
   }
 
   return (
