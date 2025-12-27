@@ -14,6 +14,7 @@ const CreateStudy = () => {
     phase: '',
     sponsor: '',
     therapeuticArea: '',
+    customTherapeuticArea: '',
     description: '',
     startDate: '',
     endDate: ''
@@ -78,6 +79,10 @@ const CreateStudy = () => {
       newErrors.therapeuticArea = 'Therapeutic area is required'
     }
 
+    if (formData.therapeuticArea === 'Other' && !formData.customTherapeuticArea.trim()) {
+      newErrors.customTherapeuticArea = 'Please specify the therapeutic area'
+    }
+
     if (formData.startDate && formData.endDate) {
       if (new Date(formData.startDate) >= new Date(formData.endDate)) {
         newErrors.endDate = 'End date must be after start date'
@@ -108,6 +113,7 @@ const CreateStudy = () => {
         const newStudy = {
           id: newStudyId,
           ...formData,
+          therapeuticArea: formData.therapeuticArea === 'Other' ? formData.customTherapeuticArea : formData.therapeuticArea,
           status: 'Draft',
           patients: 0,
           sites: 0,
@@ -290,6 +296,24 @@ const CreateStudy = () => {
                   ))}
                 </select>
                 {errors.therapeuticArea && <p className="mt-1 text-xs text-red-600">{errors.therapeuticArea}</p>}
+
+                {/* Conditional input for custom therapeutic area */}
+                {formData.therapeuticArea === 'Other' && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      id="customTherapeuticArea"
+                      name="customTherapeuticArea"
+                      value={formData.customTherapeuticArea}
+                      onChange={handleChange}
+                      placeholder="Please specify therapeutic area"
+                      className={`w-full px-4 py-2.5 border ${
+                        errors.customTherapeuticArea ? 'border-red-300' : 'border-gray-300'
+                      } rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent`}
+                    />
+                    {errors.customTherapeuticArea && <p className="mt-1 text-xs text-red-600">{errors.customTherapeuticArea}</p>}
+                  </div>
+                )}
               </div>
 
               {/* Start Date and End Date */}

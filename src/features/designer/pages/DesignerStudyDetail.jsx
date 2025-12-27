@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import useAuth from '../../../shared/hooks/useAuth'
 
 const DesignerStudyDetail = () => {
   const { studyId } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const dropdownRef = useRef(null)
 
   // Load study data from localStorage
   const [study, setStudy] = useState(null)
@@ -250,10 +254,44 @@ const DesignerStudyDetail = () => {
     setShowPreviewModal(true)
   }
 
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowProfileMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    navigate('/login')
+  }
+
+  // Get role label
+  const getRoleLabel = (role) => {
+    const labels = {
+      admin: 'Administrator',
+      project_manager: 'Project Manager',
+      study_designer: 'Study Designer',
+      build_reviewer: 'Build Reviewer',
+      uat_member: 'UAT Member',
+      site_manager: 'Site Manager',
+      data_manager: 'Data Manager'
+    }
+    return labels[role] || role
+  }
+
   // Study status workflow
   const getStatusColor = (status) => {
     const colors = {
       'Draft': 'bg-gray-100 text-gray-700 border-gray-300',
+      'Design': 'bg-gray-100 text-gray-700 border-gray-300', // Same as Draft
       'Review': 'bg-blue-100 text-blue-700 border-blue-300',
       'UAT': 'bg-amber-100 text-amber-700 border-amber-300',
       'Approved': 'bg-green-100 text-green-700 border-green-300'
@@ -264,14 +302,22 @@ const DesignerStudyDetail = () => {
   const getNextStatus = (currentStatus) => {
     const workflow = {
       'Draft': 'Review',
+      'Design': 'Review', // Handle legacy 'Design' status
       'Review': 'UAT',
       'UAT': 'Approved',
       'Approved': null
     }
-    return workflow[currentStatus]
+    // If status is not in workflow, treat as Draft
+    return workflow[currentStatus] !== undefined ? workflow[currentStatus] : workflow['Draft']
   }
 
   const handleStatusChange = (newStatus) => {
+    // Validate that at least one form exists before submitting for review
+    if (newStatus === 'Review' && forms.length === 0) {
+      alert('You must add at least one form or template before submitting this study for review.')
+      return
+    }
+
     if (window.confirm(`Are you sure you want to change study status to "${newStatus}"?`)) {
       try {
         const savedStudies = localStorage.getItem('studies')
@@ -382,8 +428,102 @@ const DesignerStudyDetail = () => {
   }
 
   return (
-    <div className="flex-1 overflow-auto">
-      {/* Header */}
+    <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
+      {/* Top Header Bar */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Center - Company Name / Logo */}
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">eC</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">eCOA</h1>
+            </div>
+          </div>
+
+          {/* Right side - Profile */}
+          <div className="flex items-center">
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                  {user?.name?.charAt(0).toUpperCase() || 'S'}
+                </div>
+                <div className="text-left hidden md:block">
+                  <p className="text-sm font-medium text-gray-900">{user?.name || 'Study Designer'}</p>
+                  <p className="text-xs text-gray-500">{getRoleLabel(user?.role) || 'Study Designer'}</p>
+                </div>
+                <svg
+                  className={`w-5 h-5 text-gray-600 transition-transform ${
+                    showProfileMenu ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-3 border-b border-gray-200">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
+                        {user?.name?.charAt(0).toUpperCase() || 'S'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {user?.name || 'Study Designer'}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                        <span className="inline-block mt-1 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
+                          {getRoleLabel(user?.role) || 'Study Designer'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-2">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                        />
+                      </svg>
+                      <span className="font-medium">Logout</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-auto">
+      {/* Study Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-8 py-6">
           {/* Back Button */}
@@ -408,7 +548,7 @@ const DesignerStudyDetail = () => {
                     study.status === 'Review' ? 'bg-blue-500' :
                     'bg-gray-400'
                   }`}></span>
-                  {study.status}
+                  {study.status === 'Design' ? 'Draft' : study.status}
                 </span>
               </div>
               <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
@@ -424,10 +564,10 @@ const DesignerStudyDetail = () => {
 
             {/* Status Workflow Controls */}
             <div className="flex items-center gap-2">
-              {getNextStatus(study.status) && (
+              {getNextStatus(study.status) && forms.length > 0 && (
                 <button
                   onClick={() => handleStatusChange(getNextStatus(study.status))}
-                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-sm font-semibold rounded-lg shadow-md shadow-green-500/30 transition-all duration-200"
+                  className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-200 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-green-500/30"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -435,7 +575,7 @@ const DesignerStudyDetail = () => {
                   Submit for {getNextStatus(study.status)}
                 </button>
               )}
-              {study.status !== 'Draft' && (
+              {study.status !== 'Draft' && study.status !== 'Design' && (
                 <button
                   onClick={() => handleStatusChange('Draft')}
                   className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-colors"
@@ -474,75 +614,16 @@ const DesignerStudyDetail = () => {
           ))}
         </div>
 
-        {/* Forms List */}
-        {forms.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-              <h2 className="text-lg font-semibold text-gray-900">Existing Forms</h2>
+        {/* Info Message when no forms exist */}
+        {forms.length === 0 && (study.status === 'Draft' || study.status === 'Design') && (
+          <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start">
+            <svg className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-sm font-medium text-blue-800">Submit for review is disabled</p>
+              <p className="text-sm text-blue-700 mt-1">You must add at least one form or template before submitting this study for review.</p>
             </div>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Form Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Version
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Modified
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Modified By
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {forms.map((form) => (
-                  <tr key={form.id} className="hover:bg-orange-50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{form.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{form.version}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{form.lastModified}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{form.modifiedBy}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handlePreviewForm(form)}
-                          className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
-                          title="Preview form"
-                        >
-                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                          Preview
-                        </button>
-                        <button
-                          onClick={() => navigate(`/designer/studies/${studyId}/forms/${form.id}`)}
-                          className="inline-flex items-center px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-medium rounded-lg transition-colors"
-                        >
-                          Edit
-                          <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         )}
       </div>
@@ -929,6 +1010,7 @@ const DesignerStudyDetail = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

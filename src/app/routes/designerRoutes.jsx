@@ -54,15 +54,13 @@ export const designerRoutes = (
       }
     />
 
-    {/* Designer Study Detail */}
+    {/* Designer Study Detail - Full Width (No Sidebar) */}
     <Route
       path="/designer/studies/:studyId"
       element={
-        <MainLayout>
-          <ProtectedRoute allowedRoles={[ROLES.STUDY_DESIGNER]}>
-            <DesignerStudyDetail />
-          </ProtectedRoute>
-        </MainLayout>
+        <ProtectedRoute allowedRoles={[ROLES.STUDY_DESIGNER]}>
+          <DesignerStudyDetail />
+        </ProtectedRoute>
       }
     />
 

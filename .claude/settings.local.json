@@ -13,7 +13,9 @@
       "Bash(findstr:*)",
       "Bash(git clone:*)",
       "Bash(gh:*)",
-      "Bash(timeout /t 5)"
+      "Bash(timeout /t 5)",
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)"
     ]
   }
 }
