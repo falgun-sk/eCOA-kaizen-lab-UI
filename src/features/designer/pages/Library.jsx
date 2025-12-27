@@ -140,6 +140,616 @@ const Library = () => {
         { id: 4, type: 'date', label: 'Assessment Date', config: { required: true } },
         { id: 5, type: 'textarea', label: 'Pain Description', config: { required: false } }
       ]
+    },
+    {
+      id: 7,
+      name: 'PHQ-9 (Depression Screening)',
+      category: 'Clinical Scales',
+      description: 'Patient Health Questionnaire-9 for depression screening with validated 0-3 response scale',
+      fields: 10,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'radio',
+          label: '1. Little interest or pleasure in doing things',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 2,
+          type: 'radio',
+          label: '2. Feeling down, depressed, or hopeless',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 3,
+          type: 'radio',
+          label: '3. Trouble falling/staying asleep, or sleeping too much',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 4,
+          type: 'radio',
+          label: '4. Feeling tired or having little energy',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 5,
+          type: 'radio',
+          label: '5. Poor appetite or overeating',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 6,
+          type: 'radio',
+          label: '6. Feeling bad about yourself or that you are a failure',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 7,
+          type: 'radio',
+          label: '7. Trouble concentrating on things',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 8,
+          type: 'radio',
+          label: '8. Moving or speaking slowly, or being fidgety/restless',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 9,
+          type: 'radio',
+          label: '9. Thoughts of being better off dead or hurting yourself',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 10,
+          type: 'dropdown',
+          label: 'Difficulty these problems have caused',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not difficult at all' },
+              { value: 1, label: 'Somewhat difficult' },
+              { value: 2, label: 'Very difficult' },
+              { value: 3, label: 'Extremely difficult' }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      id: 8,
+      name: 'GAD-7 (Anxiety Screening)',
+      category: 'Clinical Scales',
+      description: 'Generalized Anxiety Disorder 7-item scale with validated frequency responses',
+      fields: 7,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'radio',
+          label: '1. Feeling nervous, anxious, or on edge',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 2,
+          type: 'radio',
+          label: '2. Not being able to stop or control worrying',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 3,
+          type: 'radio',
+          label: '3. Worrying too much about different things',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 4,
+          type: 'radio',
+          label: '4. Trouble relaxing',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 5,
+          type: 'radio',
+          label: '5. Being so restless that it is hard to sit still',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 6,
+          type: 'radio',
+          label: '6. Becoming easily annoyed or irritable',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 7,
+          type: 'radio',
+          label: '7. Feeling afraid, as if something awful might happen',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      id: 9,
+      name: 'ESAS (Edmonton Symptom Assessment)',
+      category: 'Clinical Scales',
+      description: 'Cancer symptom assessment with 0-10 VAS scales for 10 common symptoms',
+      fields: 10,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'vas-scale',
+          label: 'Pain (0 = No pain, 10 = Worst possible pain)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 2,
+          type: 'vas-scale',
+          label: 'Tiredness (0 = Not tired, 10 = Worst possible tiredness)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 3,
+          type: 'vas-scale',
+          label: 'Nausea (0 = No nausea, 10 = Worst possible nausea)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 4,
+          type: 'vas-scale',
+          label: 'Depression (0 = Not depressed, 10 = Worst possible depression)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 5,
+          type: 'vas-scale',
+          label: 'Anxiety (0 = Not anxious, 10 = Worst possible anxiety)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 6,
+          type: 'vas-scale',
+          label: 'Drowsiness (0 = Not drowsy, 10 = Worst possible drowsiness)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 7,
+          type: 'vas-scale',
+          label: 'Appetite (0 = Best appetite, 10 = Worst possible appetite)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 8,
+          type: 'vas-scale',
+          label: 'Well-being (0 = Best well-being, 10 = Worst possible well-being)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 9,
+          type: 'vas-scale',
+          label: 'Shortness of Breath (0 = No shortness of breath, 10 = Worst possible)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 10,
+          type: 'vas-scale',
+          label: 'Other Problem (0 = Not present, 10 = Worst possible)',
+          config: {
+            required: false,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        }
+      ]
+    },
+    {
+      id: 10,
+      name: 'EQ-5D-5L (Quality of Life)',
+      category: 'Clinical Scales',
+      description: 'EuroQol 5-dimension 5-level quality of life assessment with standardized responses',
+      fields: 6,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'radio',
+          label: 'Mobility',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no problems in walking about' },
+              { value: 2, label: 'I have slight problems in walking about' },
+              { value: 3, label: 'I have moderate problems in walking about' },
+              { value: 4, label: 'I have severe problems in walking about' },
+              { value: 5, label: 'I am unable to walk about' }
+            ]
+          }
+        },
+        {
+          id: 2,
+          type: 'radio',
+          label: 'Self-Care',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no problems washing or dressing myself' },
+              { value: 2, label: 'I have slight problems washing or dressing myself' },
+              { value: 3, label: 'I have moderate problems washing or dressing myself' },
+              { value: 4, label: 'I have severe problems washing or dressing myself' },
+              { value: 5, label: 'I am unable to wash or dress myself' }
+            ]
+          }
+        },
+        {
+          id: 3,
+          type: 'radio',
+          label: 'Usual Activities',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no problems doing my usual activities' },
+              { value: 2, label: 'I have slight problems doing my usual activities' },
+              { value: 3, label: 'I have moderate problems doing my usual activities' },
+              { value: 4, label: 'I have severe problems doing my usual activities' },
+              { value: 5, label: 'I am unable to do my usual activities' }
+            ]
+          }
+        },
+        {
+          id: 4,
+          type: 'radio',
+          label: 'Pain / Discomfort',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no pain or discomfort' },
+              { value: 2, label: 'I have slight pain or discomfort' },
+              { value: 3, label: 'I have moderate pain or discomfort' },
+              { value: 4, label: 'I have severe pain or discomfort' },
+              { value: 5, label: 'I have extreme pain or discomfort' }
+            ]
+          }
+        },
+        {
+          id: 5,
+          type: 'radio',
+          label: 'Anxiety / Depression',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I am not anxious or depressed' },
+              { value: 2, label: 'I am slightly anxious or depressed' },
+              { value: 3, label: 'I am moderately anxious or depressed' },
+              { value: 4, label: 'I am severely anxious or depressed' },
+              { value: 5, label: 'I am extremely anxious or depressed' }
+            ]
+          }
+        },
+        {
+          id: 6,
+          type: 'vas-scale',
+          label: 'Overall Health Today (0 = Worst health, 100 = Best health)',
+          config: {
+            required: true,
+            min: 0,
+            max: 100,
+            step: 1
+          }
+        }
+      ]
+    },
+    {
+      id: 11,
+      name: 'Brief Pain Inventory (BPI)',
+      category: 'Clinical Scales',
+      description: 'Comprehensive pain assessment with severity and interference scales (0-10)',
+      fields: 11,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'vas-scale',
+          label: 'Pain at its WORST in last 24 hours',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 2,
+          type: 'vas-scale',
+          label: 'Pain at its LEAST in last 24 hours',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 3,
+          type: 'vas-scale',
+          label: 'Pain on AVERAGE',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 4,
+          type: 'vas-scale',
+          label: 'Pain RIGHT NOW',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 5,
+          type: 'vas-scale',
+          label: 'Interference with General Activity',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 6,
+          type: 'vas-scale',
+          label: 'Interference with Mood',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 7,
+          type: 'vas-scale',
+          label: 'Interference with Walking Ability',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 8,
+          type: 'vas-scale',
+          label: 'Interference with Normal Work',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 9,
+          type: 'vas-scale',
+          label: 'Interference with Relations with Others',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 10,
+          type: 'vas-scale',
+          label: 'Interference with Sleep',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 11,
+          type: 'vas-scale',
+          label: 'Interference with Enjoyment of Life',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        }
+      ]
     }
   ])
 
@@ -151,7 +761,7 @@ const Library = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [selectedStudy, setSelectedStudy] = useState('')
 
-  const categories = ['All', 'Standard', 'Medical', 'Safety', 'Assessment']
+  const categories = ['All', 'Standard', 'Medical', 'Safety', 'Assessment', 'Clinical Scales']
 
   // Load studies from localStorage
   useEffect(() => {
@@ -195,6 +805,8 @@ const Library = () => {
         return 'bg-red-50 text-red-700 border-red-200'
       case 'Assessment':
         return 'bg-purple-50 text-purple-700 border-purple-200'
+      case 'Clinical Scales':
+        return 'bg-indigo-50 text-indigo-700 border-indigo-200'
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200'
     }
