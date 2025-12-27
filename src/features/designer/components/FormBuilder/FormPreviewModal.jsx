@@ -5,8 +5,7 @@ const FormPreviewModal = ({
   isOpen,
   formName,
   components,
-  onClose,
-  onSaveAndClose
+  onClose
 }) => {
   const [previewValues, setPreviewValues] = useState({})
   const [previewErrors, setPreviewErrors] = useState({})
@@ -163,22 +162,6 @@ const FormPreviewModal = ({
               </div>
             )}
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Close
-          </button>
-          <button
-            onClick={onSaveAndClose}
-            className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors"
-          >
-            Save & Close
-          </button>
         </div>
       </div>
     </div>
