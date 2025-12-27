@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useAuth from '../../../shared/hooks/useAuth'
 import { ROLES } from '../../access/constants/roles'
 
 const CreateStudy = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [searchParams] = useSearchParams()
 
   const [formData, setFormData] = useState({
     name: '',
@@ -24,6 +25,39 @@ const CreateStudy = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const phases = ['Phase I', 'Phase II', 'Phase III', 'Phase IV']
+
+  // Handle clone functionality
+  useEffect(() => {
+    const cloneId = searchParams.get('cloneId')
+    if (cloneId) {
+      try {
+        // Load studies from localStorage
+        const savedStudies = localStorage.getItem('studies')
+        if (savedStudies) {
+          const studies = JSON.parse(savedStudies)
+          const studyToClone = studies.find(s => s.id === parseInt(cloneId))
+
+          if (studyToClone) {
+            // Pre-fill form with cloned study data
+            setFormData({
+              name: `${studyToClone.name} (Copy)`,
+              code: `${studyToClone.code}-COPY`,
+              protocolId: `${studyToClone.protocolId}-COPY`,
+              phase: studyToClone.phase || '',
+              sponsor: studyToClone.sponsor || '',
+              therapeuticArea: studyToClone.therapeuticArea || '',
+              customTherapeuticArea: studyToClone.customTherapeuticArea || '',
+              description: studyToClone.description || '',
+              startDate: studyToClone.startDate || '',
+              endDate: studyToClone.endDate || ''
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Error loading study to clone:', error)
+      }
+    }
+  }, [searchParams])
 
   const therapeuticAreas = [
     'Oncology',
@@ -154,8 +188,12 @@ const CreateStudy = () => {
           </button>
 
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Create New Study</h1>
-            <p className="text-sm text-gray-500 mt-1">Set up a new clinical study</p>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {searchParams.get('cloneId') ? 'Clone Study' : 'Create New Study'}
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {searchParams.get('cloneId') ? 'Create a new study from an existing one' : 'Set up a new clinical study'}
+            </p>
           </div>
         </div>
       </div>
