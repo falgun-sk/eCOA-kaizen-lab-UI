@@ -573,7 +573,7 @@ const DesignerStudyDetail = () => {
                   Submit for {getNextStatus(study.status)}
                 </button>
               )}
-              {study.status !== 'Design' && (
+              {study.status !== 'Design' && (user?.role === 'project_manager' || user?.role === 'admin') && (
                 <button
                   onClick={() => handleStatusChange('Design')}
                   className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-colors"
