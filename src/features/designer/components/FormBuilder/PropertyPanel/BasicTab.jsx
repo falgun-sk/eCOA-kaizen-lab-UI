@@ -284,21 +284,21 @@ const VASConfig = ({ component, onUpdateConfig }) => (
           <input
             type="radio"
             name="vasOrientation"
-            checked={component.config?.vasOrientation === 'horizontal' || !component.config?.vasOrientation}
-            onChange={() => onUpdateConfig('vasOrientation', 'horizontal')}
+            checked={component.config?.vasOrientation === 'vertical' || !component.config?.vasOrientation}
+            onChange={() => onUpdateConfig('vasOrientation', 'vertical')}
             className="text-orange-500 focus:ring-orange-500"
           />
-          <span className="ml-2 text-sm text-gray-700">Horizontal (default)</span>
+          <span className="ml-2 text-sm text-gray-700">Vertical (default)</span>
         </label>
         <label className="flex items-center cursor-pointer">
           <input
             type="radio"
             name="vasOrientation"
-            checked={component.config?.vasOrientation === 'vertical'}
-            onChange={() => onUpdateConfig('vasOrientation', 'vertical')}
+            checked={component.config?.vasOrientation === 'horizontal'}
+            onChange={() => onUpdateConfig('vasOrientation', 'horizontal')}
             className="text-orange-500 focus:ring-orange-500"
           />
-          <span className="ml-2 text-sm text-gray-700">Vertical</span>
+          <span className="ml-2 text-sm text-gray-700">Horizontal</span>
         </label>
       </div>
     </div>

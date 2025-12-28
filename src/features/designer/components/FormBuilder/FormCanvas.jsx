@@ -19,7 +19,7 @@ const FormCanvas = ({
         {components.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {components.map((component, index) => (
               <CanvasItem
                 key={component.id}
@@ -56,7 +56,7 @@ const CanvasItem = ({ component, index, isSelected, onSelect, onRemove }) => {
   return (
     <div
       onClick={onSelect}
-      className={`p-4 border-2 rounded-lg cursor-pointer transition-all relative ${
+      className={`p-5 border-2 rounded-lg cursor-pointer transition-all relative ${
         isSelected
           ? 'border-orange-500 bg-orange-50'
           : 'border-gray-200 hover:border-orange-300 bg-white'

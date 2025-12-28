@@ -7,7 +7,7 @@ import { getAllRoles, ROLE_DESCRIPTIONS, ROLE_PHASES } from '../constants/roles'
  * Shows what each role CAN do in a clear, easy-to-understand format
  */
 const RolePermissionsView = () => {
-  const [selectedRole, setSelectedRole] = useState(null)
+  const [openRoles, setOpenRoles] = useState([])
   const roles = getAllRoles()
 
   // Define what each role CAN do
@@ -174,7 +174,15 @@ const RolePermissionsView = () => {
   }
 
   const handleRoleClick = (roleValue) => {
-    setSelectedRole(selectedRole === roleValue ? null : roleValue)
+    setOpenRoles(prevOpenRoles => {
+      if (prevOpenRoles.includes(roleValue)) {
+        // Close this role
+        return prevOpenRoles.filter(role => role !== roleValue)
+      } else {
+        // Open this role
+        return [...prevOpenRoles, roleValue]
+      }
+    })
   }
 
   return (
@@ -191,7 +199,7 @@ const RolePermissionsView = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {roles.map((role) => {
           const permissions = rolePermissions[role.value]
-          const isExpanded = selectedRole === role.value
+          const isExpanded = openRoles.includes(role.value)
           const isPhase2 = role.value === 'data_manager'
 
           return (

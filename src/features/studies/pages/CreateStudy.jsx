@@ -23,41 +23,46 @@ const CreateStudy = () => {
 
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCloning, setIsCloning] = useState(false)
 
   const phases = ['Phase I', 'Phase II', 'Phase III', 'Phase IV']
 
   // Handle clone functionality
   useEffect(() => {
-    const cloneId = searchParams.get('cloneId')
-    if (cloneId) {
-      try {
-        // Load studies from localStorage
-        const savedStudies = localStorage.getItem('studies')
-        if (savedStudies) {
-          const studies = JSON.parse(savedStudies)
-          const studyToClone = studies.find(s => s.id === parseInt(cloneId))
+    try {
+      // Check for clone data in sessionStorage
+      const cloneDataStr = sessionStorage.getItem('cloneStudyData')
+      console.log('Clone data from sessionStorage:', cloneDataStr)
 
-          if (studyToClone) {
-            // Pre-fill form with cloned study data
-            setFormData({
-              name: `${studyToClone.name} (Copy)`,
-              code: `${studyToClone.code}-COPY`,
-              protocolId: `${studyToClone.protocolId}-COPY`,
-              phase: studyToClone.phase || '',
-              sponsor: studyToClone.sponsor || '',
-              therapeuticArea: studyToClone.therapeuticArea || '',
-              customTherapeuticArea: studyToClone.customTherapeuticArea || '',
-              description: studyToClone.description || '',
-              startDate: studyToClone.startDate || '',
-              endDate: studyToClone.endDate || ''
-            })
-          }
+      if (cloneDataStr) {
+        const cloneData = JSON.parse(cloneDataStr)
+        console.log('Parsed clone data:', cloneData)
+
+        setIsCloning(true)
+
+        // Pre-fill form with cloned study data
+        const filledData = {
+          name: `${cloneData.name} (Copy)`,
+          code: cloneData.code ? `${cloneData.code}-COPY` : '',
+          protocolId: cloneData.protocolId || cloneData.protocol || '',
+          phase: cloneData.phase || '',
+          sponsor: cloneData.sponsor || '',
+          therapeuticArea: cloneData.therapeuticArea || '',
+          customTherapeuticArea: cloneData.customTherapeuticArea || '',
+          description: cloneData.description || '',
+          startDate: cloneData.startDate || '',
+          endDate: cloneData.endDate || ''
         }
-      } catch (error) {
-        console.error('Error loading study to clone:', error)
+        console.log('Setting form data:', filledData)
+        setFormData(filledData)
+
+        // Clear the sessionStorage after reading
+        sessionStorage.removeItem('cloneStudyData')
       }
+    } catch (error) {
+      console.error('Error loading study to clone:', error)
     }
-  }, [searchParams])
+  }, [])
 
   const therapeuticAreas = [
     'Oncology',
@@ -189,10 +194,10 @@ const CreateStudy = () => {
 
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">
-              {searchParams.get('cloneId') ? 'Clone Study' : 'Create New Study'}
+              {isCloning ? 'Clone Study' : 'Create New Study'}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
-              {searchParams.get('cloneId') ? 'Create a new study from an existing one' : 'Set up a new clinical study'}
+              {isCloning ? 'Create a new study from an existing one' : 'Set up a new clinical study'}
             </p>
           </div>
         </div>
@@ -279,16 +284,13 @@ const CreateStudy = () => {
                     name="phase"
                     value={formData.phase}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2.5 border ${
-                      errors.phase ? 'border-red-300' : 'border-gray-300'
-                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white`}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
                   >
-                    <option value="">Select phase</option>
+                    <option value="">Select phase (optional)</option>
                     {phases.map(phase => (
                       <option key={phase} value={phase}>{phase}</option>
                     ))}
                   </select>
-                  {errors.phase && <p className="mt-1 text-xs text-red-600">{errors.phase}</p>}
                 </div>
 
                 <div>

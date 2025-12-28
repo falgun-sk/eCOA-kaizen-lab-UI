@@ -79,6 +79,26 @@ const DesignerDashboard = () => {
     }
 
     loadStudies()
+
+    // Reload studies when window gains focus (user returns to tab/page)
+    const handleFocus = () => {
+      loadStudies()
+    }
+
+    // Reload studies when localStorage changes (in case of multi-tab usage)
+    const handleStorageChange = (e) => {
+      if (e.key === 'studies' || e.key === null) {
+        loadStudies()
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('storage', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('storage', handleStorageChange)
+    }
   }, [])
 
   const getStateColor = (state) => {
@@ -92,9 +112,46 @@ const DesignerDashboard = () => {
   }
 
   const handleCloneStudy = (studyId) => {
+    const studyToClone = studies.find(s => s.id === studyId)
+    console.log('Cloning study from Designer Dashboard:', studyToClone)
+
+    if (studyToClone) {
+      // Create the cloned study directly without showing the form
+      const newStudyId = Date.now()
+      const existingStudies = JSON.parse(localStorage.getItem('studies') || '[]')
+
+      const clonedStudy = {
+        id: newStudyId,
+        name: `${studyToClone.studyName} (Copy)`,
+        code: `${studyToClone.studyCode}-COPY`,
+        protocolId: studyToClone.studyCode,
+        phase: '',
+        sponsor: '',
+        therapeuticArea: '',
+        customTherapeuticArea: '',
+        description: '',
+        startDate: '',
+        endDate: '',
+        status: 'Draft',
+        patients: 0,
+        sites: 0,
+        pendingCount: 0,
+        createdAt: new Date().toISOString(),
+        createdBy: 'Study Designer'
+      }
+
+      // Save to localStorage
+      const updatedStudies = [...existingStudies, clonedStudy]
+      localStorage.setItem('studies', JSON.stringify(updatedStudies))
+
+      console.log('Study cloned successfully:', clonedStudy)
+
+      // Navigate to the new study detail page
+      navigate(`/designer/studies/${newStudyId}`)
+    }
+
     setShowCloneModal(false)
     setShowDropdown(false)
-    navigate(`/studies/new?cloneId=${studyId}`)
   }
 
   return (

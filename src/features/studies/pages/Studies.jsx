@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { studiesAPI } from '../../../shared/services/api'
+import useAuth from '../../../shared/hooks/useAuth'
 
 /**
  * Studies List Page
@@ -9,12 +10,15 @@ import { studiesAPI } from '../../../shared/services/api'
  */
 const Studies = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [studies, setStudies] = useState([])
   const [filteredStudies, setFilteredStudies] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [showCloneModal, setShowCloneModal] = useState(false)
 
   // Mock data fallback
   const getMockStudies = () => [
@@ -92,11 +96,30 @@ const Studies = () => {
       setIsLoading(true)
       setError(null)
       try {
-        const data = await studiesAPI.getAll({ search: searchQuery })
-        setStudies(data)
+        // First, try to load from localStorage
+        const savedStudies = localStorage.getItem('studies')
+        let localStudies = []
+
+        if (savedStudies) {
+          localStudies = JSON.parse(savedStudies)
+        }
+
+        // Try to fetch from API
+        try {
+          const data = await studiesAPI.getAll({ search: searchQuery })
+          // Combine API data with local studies
+          const combinedStudies = [...localStudies, ...data]
+          setStudies(combinedStudies)
+        } catch (apiErr) {
+          console.log('API not available, using localStorage and mock data')
+          // API failed, combine localStorage with mock data
+          const mockData = getMockStudies()
+          const combinedStudies = [...localStudies, ...mockData]
+          setStudies(combinedStudies)
+        }
       } catch (err) {
         console.error('Error fetching studies:', err)
-        // Fallback to mock data
+        // Complete fallback to mock data
         const mockData = getMockStudies()
         setStudies(mockData)
       } finally {
@@ -108,7 +131,26 @@ const Studies = () => {
       fetchStudies()
     }, 300) // Debounce search
 
-    return () => clearTimeout(timer)
+    // Reload studies when window gains focus (user returns to tab/page)
+    const handleFocus = () => {
+      fetchStudies()
+    }
+
+    // Reload studies when localStorage changes (in case of multi-tab usage)
+    const handleStorageChange = (e) => {
+      if (e.key === 'studies' || e.key === null) {
+        fetchStudies()
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('storage', handleStorageChange)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('storage', handleStorageChange)
+    }
   }, [searchQuery])
 
   // Apply filters
@@ -140,6 +182,49 @@ const Studies = () => {
     }
   }
 
+  const handleCloneStudy = (studyId) => {
+    const studyToClone = filteredStudies.find(s => s.id === studyId)
+    console.log('Cloning study:', studyToClone)
+
+    if (studyToClone) {
+      // Create the cloned study directly without showing the form
+      const newStudyId = Date.now()
+      const existingStudies = JSON.parse(localStorage.getItem('studies') || '[]')
+
+      const clonedStudy = {
+        id: newStudyId,
+        name: `${studyToClone.name} (Copy)`,
+        code: studyToClone.code ? `${studyToClone.code}-COPY` : '',
+        protocolId: studyToClone.protocolId || studyToClone.protocol || '',
+        phase: studyToClone.phase || '',
+        sponsor: studyToClone.sponsor || '',
+        therapeuticArea: studyToClone.therapeuticArea || '',
+        customTherapeuticArea: studyToClone.customTherapeuticArea || '',
+        description: studyToClone.description || '',
+        startDate: studyToClone.startDate || '',
+        endDate: studyToClone.endDate || '',
+        status: 'Draft',
+        patients: 0,
+        sites: 0,
+        pendingCount: 0,
+        createdAt: new Date().toISOString(),
+        createdBy: user?.name || 'User'
+      }
+
+      // Save to localStorage
+      const updatedStudies = [...existingStudies, clonedStudy]
+      localStorage.setItem('studies', JSON.stringify(updatedStudies))
+
+      console.log('Study cloned successfully:', clonedStudy)
+
+      // Navigate to the new study detail page
+      navigate(`/studies/${newStudyId}`)
+    }
+
+    setShowCloneModal(false)
+    setShowDropdown(false)
+  }
+
   return (
     <div className="flex-1 flex flex-col bg-gray-50">
       {/* Header */}
@@ -152,22 +237,71 @@ const Studies = () => {
                 Manage and view all your clinical studies
               </p>
             </div>
-            <button className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-semibold rounded-lg shadow-md shadow-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 transition-all duration-200">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-semibold rounded-lg shadow-md shadow-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 transition-all duration-200"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Create New Study
-            </button>
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Create New Study
+                <svg
+                  className="w-4 h-4 ml-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false)
+                        navigate('/studies/new')
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-orange-50 transition-colors flex items-center"
+                    >
+                      <svg className="w-4 h-4 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Create New Study
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false)
+                        setShowCloneModal(true)
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-orange-50 transition-colors flex items-center border-t border-gray-100"
+                    >
+                      <svg className="w-4 h-4 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Clone Existing Study
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Search and Filter */}
@@ -410,6 +544,72 @@ const Studies = () => {
           </div>
         )}
       </div>
+
+      {/* Clone Study Modal */}
+      {showCloneModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-orange-500 to-orange-600">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-white">Clone Study ({filteredStudies.length} studies available)</h2>
+                <button
+                  onClick={() => setShowCloneModal(false)}
+                  className="text-white hover:text-gray-200 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-sm text-white/90 mt-1">Select a study to clone its configuration</p>
+            </div>
+
+            <div className="p-6 max-h-96 overflow-y-auto">
+              {filteredStudies.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No studies available to clone
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredStudies.map((study) => (
+                    <button
+                      key={study.id}
+                      onClick={() => handleCloneStudy(study.id)}
+                      className="w-full p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-300 transition-colors text-left"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-gray-900">{study.name}</div>
+                            <div className="text-xs text-gray-500 mt-0.5">Protocol: {study.protocol}</div>
+                          </div>
+                        </div>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium border ${getStatusStyle(study.status)}`}>
+                          {study.status}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end">
+              <button
+                onClick={() => setShowCloneModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

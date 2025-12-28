@@ -318,7 +318,7 @@ const FieldInput = ({ component, value, hasError, onChange }) => {
     case 'vas': {
       const minValue = component.config?.vasMin !== undefined ? component.config.vasMin : 0
       const maxValue = component.config?.vasMax !== undefined ? component.config.vasMax : 10
-      const isVertical = component.config?.vasOrientation === 'vertical'
+      const isVertical = component.config?.vasOrientation !== 'horizontal'
       const midValue = minValue + Math.floor((maxValue - minValue) / 2)
 
       if (isVertical) {

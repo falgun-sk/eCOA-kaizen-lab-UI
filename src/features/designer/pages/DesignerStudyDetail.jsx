@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import useAuth from '../../../shared/hooks/useAuth'
+import ReviewPanel from '../components/ReviewPanel'
 
 const DesignerStudyDetail = () => {
   const { studyId } = useParams()
@@ -614,6 +615,107 @@ const DesignerStudyDetail = () => {
           ))}
         </div>
 
+        {/* Forms List Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Study Forms</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {forms.length === 0 ? 'No forms added yet' : `${forms.length} form${forms.length !== 1 ? 's' : ''} in this study`}
+              </p>
+            </div>
+          </div>
+
+          {forms.length > 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Form Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Version
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Components
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Last Modified
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {forms.map((form) => (
+                    <tr key={form.id} className="hover:bg-orange-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">{form.name}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {form.version}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {form.components?.length || 0} component{form.components?.length !== 1 ? 's' : ''}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{form.lastModified}</div>
+                        <div className="text-xs text-gray-400">by {form.modifiedBy}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                        <button
+                          onClick={() => handlePreviewForm(form)}
+                          className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                        >
+                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          Preview
+                        </button>
+                        <button
+                          onClick={() => navigate(`/designer/studies/${studyId}/forms/${form.id}`)}
+                          className="inline-flex items-center px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-medium rounded-lg transition-colors"
+                        >
+                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No forms added yet</h3>
+              <p className="text-sm text-gray-500">Use the action buttons above to create a new form or select a template</p>
+            </div>
+          )}
+        </div>
+
         {/* Info Message when no forms exist */}
         {forms.length === 0 && study.status === 'Design' && (
           <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start">
@@ -624,6 +726,17 @@ const DesignerStudyDetail = () => {
               <p className="text-sm font-medium text-blue-800">Submit for review is disabled</p>
               <p className="text-sm text-blue-700 mt-1">You must add at least one form or template before submitting this study for review.</p>
             </div>
+          </div>
+        )}
+
+        {/* Review Panel - Show when study is in Review, UAT, or Approved status */}
+        {(study.status === 'Review' || study.status === 'UAT' || study.status === 'Approved') && (
+          <div className="mb-8">
+            <ReviewPanel
+              studyId={studyId}
+              study={study}
+              onStatusChange={handleStatusChange}
+            />
           </div>
         )}
       </div>

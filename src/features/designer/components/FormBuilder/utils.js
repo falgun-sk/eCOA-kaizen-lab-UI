@@ -121,10 +121,44 @@ export const hasLogic = (component) => {
  * @returns {Object} New component object
  */
 export const createNewComponent = (type, index) => {
-  return {
+  // Generate better labels for different component types
+  let label
+  switch (type) {
+    case 'vas':
+      label = `VAS Scale ${index + 1}`
+      break
+    case 'text':
+      label = `Text Field ${index + 1}`
+      break
+    case 'textarea':
+      label = `Text Area ${index + 1}`
+      break
+    case 'number':
+      label = `Number Field ${index + 1}`
+      break
+    case 'date':
+      label = `Date Field ${index + 1}`
+      break
+    case 'radio':
+      label = `Radio Group ${index + 1}`
+      break
+    case 'checkbox':
+      label = `Checkbox ${index + 1}`
+      break
+    case 'dropdown':
+      label = `Dropdown ${index + 1}`
+      break
+    case 'image':
+      label = `Image Capture ${index + 1}`
+      break
+    default:
+      label = `${type} ${index + 1}`
+  }
+
+  const baseConfig = {
     id: Date.now(),
     type,
-    label: `${type} ${index + 1}`,
+    label,
     config: {
       required: false,
       validation: {
@@ -153,6 +187,15 @@ export const createNewComponent = (type, index) => {
       }
     }
   }
+
+  // Add VAS-specific defaults
+  if (type === 'vas') {
+    baseConfig.config.vasMin = 0
+    baseConfig.config.vasMax = 10
+    baseConfig.config.vasOrientation = 'vertical'
+  }
+
+  return baseConfig
 }
 
 /**

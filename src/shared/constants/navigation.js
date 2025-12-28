@@ -92,13 +92,6 @@ export const NAVIGATION_ITEMS = [
     roles: ['admin', 'project_manager']
   },
   {
-    id: 'audit',
-    label: 'Audit Logs',
-    path: '/audit',
-    icon: 'audit',
-    roles: ['admin']
-  },
-  {
     id: 'data',
     label: 'Data Management',
     path: '/data',
