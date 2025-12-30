@@ -193,6 +193,9 @@ export const createNewComponent = (type, index) => {
     baseConfig.config.vasMin = 0
     baseConfig.config.vasMax = 10
     baseConfig.config.vasOrientation = 'vertical'
+    baseConfig.config.vasMinLabel = ''
+    baseConfig.config.vasMaxLabel = ''
+    baseConfig.config.vasInterval = 1
   }
 
   return baseConfig

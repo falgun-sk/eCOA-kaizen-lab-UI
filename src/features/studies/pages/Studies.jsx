@@ -19,6 +19,14 @@ const Studies = () => {
   const [error, setError] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const [showCloneModal, setShowCloneModal] = useState(false)
+  const [showCloneEditModal, setShowCloneEditModal] = useState(false)
+  const [studyToClone, setStudyToClone] = useState(null)
+  const [cloneFormData, setCloneFormData] = useState({
+    name: '',
+    code: '',
+    protocolId: '',
+    version: 'V1.0'
+  })
 
   // Mock data fallback
   const getMockStudies = () => [
@@ -182,20 +190,34 @@ const Studies = () => {
     }
   }
 
-  const handleCloneStudy = (studyId) => {
-    const studyToClone = filteredStudies.find(s => s.id === studyId)
-    console.log('Cloning study:', studyToClone)
+  const handleSelectStudyToClone = (studyId) => {
+    const study = filteredStudies.find(s => s.id === studyId)
+    console.log('Selected study to clone:', study)
 
-    if (studyToClone) {
-      // Create the cloned study directly without showing the form
+    if (study) {
+      setStudyToClone(study)
+      setCloneFormData({
+        name: `${study.name} (Copy)`,
+        code: study.code ? `${study.code}-COPY` : '',
+        protocolId: study.protocolId || study.protocol || '',
+        version: 'V1.0'
+      })
+      setShowCloneModal(false)
+      setShowCloneEditModal(true)
+    }
+  }
+
+  const handleConfirmClone = () => {
+    if (studyToClone && cloneFormData.name && cloneFormData.code) {
+      // Create the cloned study with edited data
       const newStudyId = Date.now()
       const existingStudies = JSON.parse(localStorage.getItem('studies') || '[]')
 
       const clonedStudy = {
         id: newStudyId,
-        name: `${studyToClone.name} (Copy)`,
-        code: studyToClone.code ? `${studyToClone.code}-COPY` : '',
-        protocolId: studyToClone.protocolId || studyToClone.protocol || '',
+        name: cloneFormData.name,
+        code: cloneFormData.code,
+        protocolId: cloneFormData.protocolId,
         phase: studyToClone.phase || '',
         sponsor: studyToClone.sponsor || '',
         therapeuticArea: studyToClone.therapeuticArea || '',
@@ -217,12 +239,15 @@ const Studies = () => {
 
       console.log('Study cloned successfully:', clonedStudy)
 
+      // Reset state
+      setShowCloneEditModal(false)
+      setStudyToClone(null)
+      setCloneFormData({ name: '', code: '', protocolId: '', version: 'V1.0' })
+      setShowDropdown(false)
+
       // Navigate to the new study detail page
       navigate(`/studies/${newStudyId}`)
     }
-
-    setShowCloneModal(false)
-    setShowDropdown(false)
   }
 
   return (
@@ -574,7 +599,7 @@ const Studies = () => {
                   {filteredStudies.map((study) => (
                     <button
                       key={study.id}
-                      onClick={() => handleCloneStudy(study.id)}
+                      onClick={() => handleSelectStudyToClone(study.id)}
                       className="w-full p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-300 transition-colors text-left"
                     >
                       <div className="flex items-center justify-between">
@@ -605,6 +630,130 @@ const Studies = () => {
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clone Study Edit Modal */}
+      {showCloneEditModal && studyToClone && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => {
+            setShowCloneEditModal(false)
+            setStudyToClone(null)
+            setCloneFormData({ name: '', code: '', protocolId: '', version: 'V1.0' })
+          }}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-xl w-full max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-orange-500 to-orange-600">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-white">Edit Cloned Study Details</h2>
+                  <p className="text-sm text-white/90 mt-1">Cloning from: {studyToClone.name}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowCloneEditModal(false)
+                    setStudyToClone(null)
+                    setCloneFormData({ name: '', code: '', protocolId: '', version: 'V1.0' })
+                  }}
+                  className="text-white hover:text-gray-200 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Study Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={cloneFormData.name}
+                  onChange={(e) => setCloneFormData({ ...cloneFormData, name: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Enter study name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Study Code <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={cloneFormData.code}
+                  onChange={(e) => setCloneFormData({ ...cloneFormData, code: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Enter study code"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Protocol ID <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={cloneFormData.protocolId}
+                  onChange={(e) => setCloneFormData({ ...cloneFormData, protocolId: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Enter protocol ID"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Version
+                </label>
+                <input
+                  type="text"
+                  value={cloneFormData.version}
+                  onChange={(e) => setCloneFormData({ ...cloneFormData, version: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Enter version (e.g., V1.0)"
+                />
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex">
+                  <svg className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="text-sm text-blue-800">
+                    <p className="font-medium">Note:</p>
+                    <p className="mt-1">The cloned study will be created with Draft status and all forms from the original study will be copied.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowCloneEditModal(false)
+                  setStudyToClone(null)
+                  setCloneFormData({ name: '', code: '', protocolId: '', version: 'V1.0' })
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmClone}
+                disabled={!cloneFormData.name || !cloneFormData.code}
+                className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Clone Study
               </button>
             </div>
           </div>

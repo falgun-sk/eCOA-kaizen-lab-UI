@@ -9,8 +9,22 @@ const FormPreviewModal = ({
 }) => {
   const [previewValues, setPreviewValues] = useState({})
   const [previewErrors, setPreviewErrors] = useState({})
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   if (!isOpen) return null
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1)
+    }
+  }
+
+  const handleNext = () => {
+    const visibleCount = components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length
+    if (currentIndex < visibleCount - 1) {
+      setCurrentIndex(currentIndex + 1)
+    }
+  }
 
   const handleValueChange = (componentId, value) => {
     setPreviewValues({ ...previewValues, [componentId]: value })
@@ -127,14 +141,42 @@ const FormPreviewModal = ({
         </div>
 
         {/* Content */}
-        <div className="p-8 max-h-[calc(90vh-120px)] overflow-y-auto">
+        <div className="p-8 max-h-[calc(90vh-200px)] overflow-y-auto">
           <div className="max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">{formName}</h3>
+            {/* Progress Indicator */}
+            {components.length > 0 && (
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">{formName}</h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Question {currentIndex + 1} of {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="text-sm text-gray-500">
+                    {Math.round(((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100)}% Complete
+                  </div>
+                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-300"
+                      style={{ width: `${((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
-            <form className="space-y-6">
+            <form className="min-h-[300px]">
               {components.map((component, index) => {
                 const isVisible = shouldShowFieldWithBranching(component, index)
                 if (!isVisible) return null
+
+                // Get the visible index
+                const visibleComponents = components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx))
+                const visibleIndex = visibleComponents.findIndex(c => c.id === component.id)
+
+                // Only show the current component
+                if (visibleIndex !== currentIndex) return null
 
                 const errors = previewErrors[component.id] || []
                 const hasError = errors.length > 0
@@ -163,6 +205,37 @@ const FormPreviewModal = ({
             )}
           </div>
         </div>
+
+        {/* Navigation Footer */}
+        {components.length > 0 && (
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+            <button
+              onClick={handlePrevious}
+              disabled={currentIndex === 0}
+              className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Previous
+            </button>
+
+            <div className="text-sm text-gray-600">
+              {currentIndex + 1} / {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
+            </div>
+
+            <button
+              onClick={handleNext}
+              disabled={currentIndex >= components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length - 1}
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -318,45 +391,64 @@ const FieldInput = ({ component, value, hasError, onChange }) => {
     case 'vas': {
       const minValue = component.config?.vasMin !== undefined ? component.config.vasMin : 0
       const maxValue = component.config?.vasMax !== undefined ? component.config.vasMax : 10
-      const isVertical = component.config?.vasOrientation !== 'horizontal'
+      const interval = component.config?.vasInterval || 1
+      const minLabel = component.config?.vasMinLabel || ''
+      const maxLabel = component.config?.vasMaxLabel || ''
       const midValue = minValue + Math.floor((maxValue - minValue) / 2)
 
-      if (isVertical) {
-        return (
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col items-center h-64 justify-between">
-              <span className="text-xs text-gray-500">{maxValue}</span>
+      // Always render VAS scales vertically with world-class design
+      return (
+        <div className="flex items-center justify-center gap-8 py-6">
+          {/* Vertical Scale Container */}
+          <div className="flex flex-col items-center bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            {/* Top Label (Max) */}
+            <div className="flex flex-col items-center mb-4">
+              <div className="text-lg font-semibold text-gray-900 mb-1.5">{maxValue}</div>
+              {maxLabel && (
+                <div className="px-2.5 py-1 bg-orange-50 rounded-lg border border-orange-100">
+                  <span className="text-xs font-medium text-orange-700">{maxLabel}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Vertical Slider with Scale Marks */}
+            <div className="relative flex items-center gap-3">
+              {/* Scale Track Background */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-48 bg-gradient-to-b from-orange-500 via-orange-400 to-orange-300 rounded-full opacity-20"></div>
+
+              {/* Slider Input */}
               <input
                 type="range"
                 min={minValue}
                 max={maxValue}
+                step={interval}
                 value={value || midValue}
                 onChange={(e) => onChange(e.target.value)}
                 orient="vertical"
-                className="h-48 cursor-pointer"
-                style={{ writingMode: 'bt-lr', WebkitAppearance: 'slider-vertical', width: '8px' }}
+                className="h-48 cursor-pointer relative z-10"
+                style={{
+                  writingMode: 'bt-lr',
+                  WebkitAppearance: 'slider-vertical',
+                  width: '8px'
+                }}
               />
-              <span className="text-xs text-gray-500">{minValue}</span>
             </div>
-            <span className="text-sm font-medium text-orange-600">{value || midValue}</span>
-          </div>
-        )
-      }
 
-      return (
-        <div>
-          <input
-            type="range"
-            min={minValue}
-            max={maxValue}
-            value={value || midValue}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-          />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>{minValue}</span>
-            <span className="font-medium text-orange-600">{value || midValue}</span>
-            <span>{maxValue}</span>
+            {/* Bottom Label (Min) */}
+            <div className="flex flex-col items-center mt-4">
+              <div className="text-lg font-semibold text-gray-900 mb-1.5">{minValue}</div>
+              {minLabel && (
+                <div className="px-2.5 py-1 bg-orange-50 rounded-lg border border-orange-100">
+                  <span className="text-xs font-medium text-orange-700">{minLabel}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Current Value Display */}
+          <div className="flex flex-col items-center justify-center min-w-[100px] p-5 bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-2xl border border-orange-200 shadow-sm">
+            <div className="text-xs font-medium text-gray-500 mb-2">Your Selection</div>
+            <div className="text-4xl font-bold text-orange-600">{value || midValue}</div>
           </div>
         </div>
       )

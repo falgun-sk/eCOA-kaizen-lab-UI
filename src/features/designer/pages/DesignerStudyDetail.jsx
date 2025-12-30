@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import useAuth from '../../../shared/hooks/useAuth'
 import ReviewPanel from '../components/ReviewPanel'
@@ -7,8 +7,6 @@ const DesignerStudyDetail = () => {
   const { studyId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [showProfileMenu, setShowProfileMenu] = useState(false)
-  const dropdownRef = useRef(null)
 
   // Load study data from localStorage
   const [study, setStudy] = useState(null)
@@ -255,39 +253,6 @@ const DesignerStudyDetail = () => {
     setShowPreviewModal(true)
   }
 
-  // Close profile dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowProfileMenu(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    navigate('/login')
-  }
-
-  // Get role label
-  const getRoleLabel = (role) => {
-    const labels = {
-      admin: 'Administrator',
-      project_manager: 'Project Manager',
-      study_designer: 'Study Designer',
-      build_reviewer: 'Build Reviewer',
-      uat_member: 'UAT Member',
-      site_manager: 'Site Manager',
-      data_manager: 'Data Manager'
-    }
-    return labels[role] || role
-  }
-
   // Study status workflow
   const getStatusColor = (status) => {
     const colors = {
@@ -427,101 +392,7 @@ const DesignerStudyDetail = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-50">
-      {/* Top Header Bar */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Center - Company Name / Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">eC</span>
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">eCOA</h1>
-            </div>
-          </div>
-
-          {/* Right side - Profile */}
-          <div className="flex items-center">
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
-                  {user?.name?.charAt(0).toUpperCase() || 'S'}
-                </div>
-                <div className="text-left hidden md:block">
-                  <p className="text-sm font-medium text-gray-900">{user?.name || 'Study Designer'}</p>
-                  <p className="text-xs text-gray-500">{getRoleLabel(user?.role) || 'Study Designer'}</p>
-                </div>
-                <svg
-                  className={`w-5 h-5 text-gray-600 transition-transform ${
-                    showProfileMenu ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {/* Dropdown Menu */}
-              {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                  <div className="px-4 py-3 border-b border-gray-200">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">
-                        {user?.name?.charAt(0).toUpperCase() || 'S'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate">
-                          {user?.name || 'Study Designer'}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
-                          {getRoleLabel(user?.role) || 'Study Designer'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-200 pt-2">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                        />
-                      </svg>
-                      <span className="font-medium">Logout</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-auto">
+    <div className="flex flex-col h-full bg-gray-50">
       {/* Study Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-8 py-6">
@@ -1028,21 +899,32 @@ const DesignerStudyDetail = () => {
                           />
                         )}
 
-                        {/* VAS Scale */}
+                        {/* VAS Scale - Always Vertical */}
                         {component.type === 'vas' && (
-                          <div>
-                            <input
-                              type="range"
-                              min="0"
-                              max="10"
-                              defaultValue="5"
-                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                              disabled
-                            />
-                            <div className="flex justify-between text-xs text-gray-500 mt-1">
-                              <span>0 - No Pain</span>
-                              <span className="font-medium text-blue-600">5</span>
-                              <span>10 - Worst Pain</span>
+                          <div className="flex items-center justify-center gap-6 py-4">
+                            {/* Vertical Scale */}
+                            <div className="flex flex-col items-center bg-white rounded-xl border border-gray-200 p-4">
+                              <div className="text-sm font-semibold text-gray-900 mb-3">10</div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="10"
+                                defaultValue="5"
+                                orient="vertical"
+                                className="h-32 cursor-pointer"
+                                style={{
+                                  writingMode: 'bt-lr',
+                                  WebkitAppearance: 'slider-vertical',
+                                  width: '8px'
+                                }}
+                                disabled
+                              />
+                              <div className="text-sm font-semibold text-gray-900 mt-3">0</div>
+                            </div>
+                            {/* Current Value */}
+                            <div className="flex flex-col items-center justify-center min-w-[80px] p-3 bg-orange-50 rounded-xl border border-orange-200">
+                              <div className="text-xs font-medium text-gray-500 mb-1">Value</div>
+                              <div className="text-2xl font-bold text-orange-600">5</div>
                             </div>
                           </div>
                         )}
@@ -1123,7 +1005,6 @@ const DesignerStudyDetail = () => {
           </div>
         </div>
       )}
-      </div>
     </div>
   )
 }
