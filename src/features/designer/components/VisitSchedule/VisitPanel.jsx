@@ -202,31 +202,6 @@ const ScheduledVisitFields = ({ visitData, setVisitData, visits, isEditing, sele
       </div>
     </div>
 
-    <div className="grid grid-cols-2 gap-3">
-      <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">Early Window (days)</label>
-        <input
-          type="number"
-          value={visitData.windowEarly}
-          onChange={(e) => setVisitData({ ...visitData, windowEarly: e.target.value })}
-          placeholder="3"
-          min="0"
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-      <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">Late Window (days)</label>
-        <input
-          type="number"
-          value={visitData.windowLate}
-          onChange={(e) => setVisitData({ ...visitData, windowLate: e.target.value })}
-          placeholder="3"
-          min="0"
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-    </div>
-
     {/* Repeating Visit */}
     <div>
       <label className="flex items-center cursor-pointer">

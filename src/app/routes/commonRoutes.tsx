@@ -6,6 +6,7 @@ import { ROLES } from '../../features/access/constants/roles'
 // Pages
 import Dashboard from '../../features/dashboard/pages/Dashboard'
 import Access from '../../features/access/pages/Access'
+import Reports from '../../features/studies/pages/Reports'
 import Placeholder from '../../shared/components/Placeholder'
 
 /**
@@ -36,6 +37,18 @@ export const commonRoutes = (
         <MainLayout>
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <Access />
+          </ProtectedRoute>
+        </MainLayout>
+      }
+    />
+
+    {/* Reports */}
+    <Route
+      path="/reports"
+      element={
+        <MainLayout>
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.DATA_MANAGER]}>
+            <Reports />
           </ProtectedRoute>
         </MainLayout>
       }

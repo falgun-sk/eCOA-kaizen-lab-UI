@@ -14,7 +14,16 @@
       "Bash(git clone:*)",
       "Bash(gh:*)",
       "Bash(timeout /t 5)",
-      "Bash(npm install:*)"
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(netstat:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(echo:*)",
+      "Bash(node -e:*)",
+      "Bash(npm install:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(git remote:*)"
     ]
   }
 }

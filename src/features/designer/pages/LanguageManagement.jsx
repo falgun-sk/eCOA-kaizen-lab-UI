@@ -7,7 +7,7 @@ const LanguageManagement = () => {
 
   const [languages, setLanguages] = useState([
     { id: 1, country: 'USA', language: 'English', code: 'enUs', status: 'Approved' },
-    { id: 2, country: 'Mexico', language: 'Spanish', code: 'esMs', status: 'Draft' },
+    { id: 2, country: 'Mexico', language: 'Spanish', code: 'esMs', status: 'Design' },
     { id: 3, country: 'India', language: 'Hindi', code: 'inHi', status: 'Review' }
   ])
 
@@ -26,18 +26,18 @@ const LanguageManagement = () => {
   const getStatusColor = (status) => {
     const colors = {
       'Approved': 'bg-green-50 text-green-700 border-green-200',
-      'Draft': 'bg-gray-50 text-gray-700 border-gray-200',
+      'Design': 'bg-gray-50 text-gray-700 border-gray-200',
       'Review': 'bg-blue-50 text-blue-700 border-blue-200',
       'Pending': 'bg-amber-50 text-amber-700 border-amber-200'
     }
-    return colors[status] || colors['Draft']
+    return colors[status] || colors['Design']
   }
 
   const addLanguages = () => {
     const newLanguages = selectedLanguages.map((lang, index) => ({
       id: languages.length + index + 1,
       ...lang,
-      status: 'Draft'
+      status: 'Design'
     }))
     setLanguages([...languages, ...newLanguages])
     setSelectedLanguages([])

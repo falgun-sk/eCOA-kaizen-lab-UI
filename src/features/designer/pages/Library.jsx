@@ -140,6 +140,778 @@ const Library = () => {
         { id: 4, type: 'date', label: 'Assessment Date', config: { required: true } },
         { id: 5, type: 'textarea', label: 'Pain Description', config: { required: false } }
       ]
+    },
+    {
+      id: 7,
+      name: 'PHQ-9 (Depression Screening)',
+      category: 'Clinical Scales',
+      description: 'Patient Health Questionnaire-9 for depression screening with validated 0-3 response scale',
+      fields: 10,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'radio',
+          label: '1. Little interest or pleasure in doing things',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 2,
+          type: 'radio',
+          label: '2. Feeling down, depressed, or hopeless',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 3,
+          type: 'radio',
+          label: '3. Trouble falling/staying asleep, or sleeping too much',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 4,
+          type: 'radio',
+          label: '4. Feeling tired or having little energy',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 5,
+          type: 'radio',
+          label: '5. Poor appetite or overeating',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 6,
+          type: 'radio',
+          label: '6. Feeling bad about yourself or that you are a failure',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 7,
+          type: 'radio',
+          label: '7. Trouble concentrating on things',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 8,
+          type: 'radio',
+          label: '8. Moving or speaking slowly, or being fidgety/restless',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 9,
+          type: 'radio',
+          label: '9. Thoughts of being better off dead or hurting yourself',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 10,
+          type: 'dropdown',
+          label: 'Difficulty these problems have caused',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not difficult at all' },
+              { value: 1, label: 'Somewhat difficult' },
+              { value: 2, label: 'Very difficult' },
+              { value: 3, label: 'Extremely difficult' }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      id: 8,
+      name: 'GAD-7 (Anxiety Screening)',
+      category: 'Clinical Scales',
+      description: 'Generalized Anxiety Disorder 7-item scale with validated frequency responses',
+      fields: 7,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'radio',
+          label: '1. Feeling nervous, anxious, or on edge',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 2,
+          type: 'radio',
+          label: '2. Not being able to stop or control worrying',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 3,
+          type: 'radio',
+          label: '3. Worrying too much about different things',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 4,
+          type: 'radio',
+          label: '4. Trouble relaxing',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 5,
+          type: 'radio',
+          label: '5. Being so restless that it is hard to sit still',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 6,
+          type: 'radio',
+          label: '6. Becoming easily annoyed or irritable',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        },
+        {
+          id: 7,
+          type: 'radio',
+          label: '7. Feeling afraid, as if something awful might happen',
+          config: {
+            required: true,
+            options: [
+              { value: 0, label: 'Not at all' },
+              { value: 1, label: 'Several days' },
+              { value: 2, label: 'More than half the days' },
+              { value: 3, label: 'Nearly every day' }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      id: 9,
+      name: 'ESAS (Edmonton Symptom Assessment)',
+      category: 'Clinical Scales',
+      description: 'Cancer symptom assessment with 0-10 VAS scales for 10 common symptoms',
+      fields: 10,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'vas-scale',
+          label: 'Pain (0 = No pain, 10 = Worst possible pain)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 2,
+          type: 'vas-scale',
+          label: 'Tiredness (0 = Not tired, 10 = Worst possible tiredness)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 3,
+          type: 'vas-scale',
+          label: 'Nausea (0 = No nausea, 10 = Worst possible nausea)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 4,
+          type: 'vas-scale',
+          label: 'Depression (0 = Not depressed, 10 = Worst possible depression)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 5,
+          type: 'vas-scale',
+          label: 'Anxiety (0 = Not anxious, 10 = Worst possible anxiety)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 6,
+          type: 'vas-scale',
+          label: 'Drowsiness (0 = Not drowsy, 10 = Worst possible drowsiness)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 7,
+          type: 'vas-scale',
+          label: 'Appetite (0 = Best appetite, 10 = Worst possible appetite)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 8,
+          type: 'vas-scale',
+          label: 'Well-being (0 = Best well-being, 10 = Worst possible well-being)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 9,
+          type: 'vas-scale',
+          label: 'Shortness of Breath (0 = No shortness of breath, 10 = Worst possible)',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 10,
+          type: 'vas-scale',
+          label: 'Other Problem (0 = Not present, 10 = Worst possible)',
+          config: {
+            required: false,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        }
+      ]
+    },
+    {
+      id: 10,
+      name: 'EQ-5D-5L (Quality of Life)',
+      category: 'Clinical Scales',
+      description: 'EuroQol 5-dimension 5-level quality of life assessment with standardized responses',
+      fields: 6,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'radio',
+          label: 'Mobility',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no problems in walking about' },
+              { value: 2, label: 'I have slight problems in walking about' },
+              { value: 3, label: 'I have moderate problems in walking about' },
+              { value: 4, label: 'I have severe problems in walking about' },
+              { value: 5, label: 'I am unable to walk about' }
+            ]
+          }
+        },
+        {
+          id: 2,
+          type: 'radio',
+          label: 'Self-Care',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no problems washing or dressing myself' },
+              { value: 2, label: 'I have slight problems washing or dressing myself' },
+              { value: 3, label: 'I have moderate problems washing or dressing myself' },
+              { value: 4, label: 'I have severe problems washing or dressing myself' },
+              { value: 5, label: 'I am unable to wash or dress myself' }
+            ]
+          }
+        },
+        {
+          id: 3,
+          type: 'radio',
+          label: 'Usual Activities',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no problems doing my usual activities' },
+              { value: 2, label: 'I have slight problems doing my usual activities' },
+              { value: 3, label: 'I have moderate problems doing my usual activities' },
+              { value: 4, label: 'I have severe problems doing my usual activities' },
+              { value: 5, label: 'I am unable to do my usual activities' }
+            ]
+          }
+        },
+        {
+          id: 4,
+          type: 'radio',
+          label: 'Pain / Discomfort',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I have no pain or discomfort' },
+              { value: 2, label: 'I have slight pain or discomfort' },
+              { value: 3, label: 'I have moderate pain or discomfort' },
+              { value: 4, label: 'I have severe pain or discomfort' },
+              { value: 5, label: 'I have extreme pain or discomfort' }
+            ]
+          }
+        },
+        {
+          id: 5,
+          type: 'radio',
+          label: 'Anxiety / Depression',
+          config: {
+            required: true,
+            options: [
+              { value: 1, label: 'I am not anxious or depressed' },
+              { value: 2, label: 'I am slightly anxious or depressed' },
+              { value: 3, label: 'I am moderately anxious or depressed' },
+              { value: 4, label: 'I am severely anxious or depressed' },
+              { value: 5, label: 'I am extremely anxious or depressed' }
+            ]
+          }
+        },
+        {
+          id: 6,
+          type: 'vas-scale',
+          label: 'Overall Health Today (0 = Worst health, 100 = Best health)',
+          config: {
+            required: true,
+            min: 0,
+            max: 100,
+            step: 1
+          }
+        }
+      ]
+    },
+    {
+      id: 11,
+      name: 'Brief Pain Inventory (BPI)',
+      category: 'Clinical Scales',
+      description: 'Comprehensive pain assessment with severity and interference scales (0-10)',
+      fields: 11,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        {
+          id: 1,
+          type: 'vas-scale',
+          label: 'Pain at its WORST in last 24 hours',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 2,
+          type: 'vas-scale',
+          label: 'Pain at its LEAST in last 24 hours',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 3,
+          type: 'vas-scale',
+          label: 'Pain on AVERAGE',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 4,
+          type: 'vas-scale',
+          label: 'Pain RIGHT NOW',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 5,
+          type: 'vas-scale',
+          label: 'Interference with General Activity',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 6,
+          type: 'vas-scale',
+          label: 'Interference with Mood',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 7,
+          type: 'vas-scale',
+          label: 'Interference with Walking Ability',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 8,
+          type: 'vas-scale',
+          label: 'Interference with Normal Work',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 9,
+          type: 'vas-scale',
+          label: 'Interference with Relations with Others',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 10,
+          type: 'vas-scale',
+          label: 'Interference with Sleep',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        },
+        {
+          id: 11,
+          type: 'vas-scale',
+          label: 'Interference with Enjoyment of Life',
+          config: {
+            required: true,
+            min: 0,
+            max: 10,
+            step: 1
+          }
+        }
+      ]
+    },
+    {
+      id: 12,
+      name: 'FACT-G (Functional Assessment Cancer Therapy)',
+      category: 'Clinical Scales',
+      description: 'General cancer quality of life assessment with 4 well-being domains',
+      fields: 27,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        { id: 1, type: 'radio', label: 'Physical - I have a lack of energy', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 2, type: 'radio', label: 'Physical - I have nausea', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 3, type: 'radio', label: 'Physical - I have trouble meeting needs of family', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 4, type: 'radio', label: 'Physical - I have pain', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 5, type: 'radio', label: 'Physical - I am bothered by side effects of treatment', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 6, type: 'radio', label: 'Physical - I feel ill', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 7, type: 'radio', label: 'Physical - I am forced to spend time in bed', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 8, type: 'radio', label: 'Social - I feel close to my friends', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 9, type: 'radio', label: 'Social - I get emotional support from family', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 10, type: 'radio', label: 'Social - I get support from friends', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 11, type: 'radio', label: 'Social - My family accepted my illness', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 12, type: 'radio', label: 'Social - I am satisfied with family communication', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 13, type: 'radio', label: 'Social - I feel close to my partner', config: { required: false, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 14, type: 'radio', label: 'Social - My sex life is satisfying', config: { required: false, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 15, type: 'radio', label: 'Emotional - I feel sad', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 16, type: 'radio', label: 'Emotional - I am satisfied with how I am coping', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 17, type: 'radio', label: 'Emotional - I am losing hope in the fight against illness', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 18, type: 'radio', label: 'Emotional - I feel nervous', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 19, type: 'radio', label: 'Emotional - I worry about dying', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 20, type: 'radio', label: 'Emotional - I worry condition will get worse', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 21, type: 'radio', label: 'Functional - I am able to work', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 22, type: 'radio', label: 'Functional - My work is fulfilling', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 23, type: 'radio', label: 'Functional - I am able to enjoy life', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 24, type: 'radio', label: 'Functional - I have accepted my illness', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 25, type: 'radio', label: 'Functional - I am sleeping well', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 26, type: 'radio', label: 'Functional - I am enjoying things I usually do for fun', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } },
+        { id: 27, type: 'radio', label: 'Functional - I am content with quality of life', config: { required: true, options: [{ value: 0, label: 'Not at all' }, { value: 1, label: 'A little bit' }, { value: 2, label: 'Somewhat' }, { value: 3, label: 'Quite a bit' }, { value: 4, label: 'Very much' }] } }
+      ]
+    },
+    {
+      id: 13,
+      name: 'WOMAC (Osteoarthritis Index)',
+      category: 'Clinical Scales',
+      description: 'Western Ontario McMaster Osteoarthritis Index for knee and hip assessment',
+      fields: 24,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        { id: 1, type: 'radio', label: 'Pain - Walking', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 2, type: 'radio', label: 'Pain - Stairs', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 3, type: 'radio', label: 'Pain - At night in bed', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 4, type: 'radio', label: 'Pain - Sitting or lying', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 5, type: 'radio', label: 'Pain - Standing upright', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 6, type: 'radio', label: 'Stiffness - Morning stiffness', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 7, type: 'radio', label: 'Stiffness - After sitting/lying/resting', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 8, type: 'radio', label: 'Function - Descending stairs', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 9, type: 'radio', label: 'Function - Ascending stairs', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 10, type: 'radio', label: 'Function - Rising from sitting', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 11, type: 'radio', label: 'Function - Standing', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 12, type: 'radio', label: 'Function - Bending to floor', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 13, type: 'radio', label: 'Function - Walking on flat surface', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 14, type: 'radio', label: 'Function - Getting in/out of car', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 15, type: 'radio', label: 'Function - Going shopping', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 16, type: 'radio', label: 'Function - Putting on socks', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 17, type: 'radio', label: 'Function - Rising from bed', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 18, type: 'radio', label: 'Function - Taking off socks', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 19, type: 'radio', label: 'Function - Lying in bed', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 20, type: 'radio', label: 'Function - Getting in/out of bath', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 21, type: 'radio', label: 'Function - Sitting', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 22, type: 'radio', label: 'Function - Getting on/off toilet', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 23, type: 'radio', label: 'Function - Heavy household duties', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } },
+        { id: 24, type: 'radio', label: 'Function - Light household duties', config: { required: true, options: [{ value: 0, label: 'None' }, { value: 1, label: 'Mild' }, { value: 2, label: 'Moderate' }, { value: 3, label: 'Severe' }, { value: 4, label: 'Extreme' }] } }
+      ]
+    },
+    {
+      id: 14,
+      name: 'MADRS (Montgomery-Asberg Depression)',
+      category: 'Clinical Scales',
+      description: 'Clinician-rated depression assessment with 10 items scored 0-6',
+      fields: 10,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        { id: 1, type: 'radio', label: '1. Apparent Sadness', config: { required: true, options: [{ value: 0, label: 'No sadness' }, { value: 2, label: 'Looks dispirited but brightens' }, { value: 4, label: 'Appears sad and unhappy most of time' }, { value: 6, label: 'Looks miserable all the time' }] } },
+        { id: 2, type: 'radio', label: '2. Reported Sadness', config: { required: true, options: [{ value: 0, label: 'Occasional sadness' }, { value: 2, label: 'Sad or low but brightens' }, { value: 4, label: 'Pervasive feelings of sadness' }, { value: 6, label: 'Continuous helpless and despairing' }] } },
+        { id: 3, type: 'radio', label: '3. Inner Tension', config: { required: true, options: [{ value: 0, label: 'Placid, inner calm' }, { value: 2, label: 'Occasional tension and irritability' }, { value: 4, label: 'Continuous tension and panic' }, { value: 6, label: 'Unrelenting dread or anguish' }] } },
+        { id: 4, type: 'radio', label: '4. Reduced Sleep', config: { required: true, options: [{ value: 0, label: 'Sleeps as usual' }, { value: 2, label: 'Slight difficulty falling asleep' }, { value: 4, label: 'Reduced sleep by 2 hours' }, { value: 6, label: 'Less than 2-3 hours sleep' }] } },
+        { id: 5, type: 'radio', label: '5. Reduced Appetite', config: { required: true, options: [{ value: 0, label: 'Normal appetite' }, { value: 2, label: 'Slightly reduced appetite' }, { value: 4, label: 'No appetite, food tasteless' }, { value: 6, label: 'Needs persuasion to eat' }] } },
+        { id: 6, type: 'radio', label: '6. Concentration Difficulties', config: { required: true, options: [{ value: 0, label: 'No difficulties concentrating' }, { value: 2, label: 'Difficulties collecting thoughts' }, { value: 4, label: 'Difficulty reading or conversation' }, { value: 6, label: 'Unable to read or converse' }] } },
+        { id: 7, type: 'radio', label: '7. Lassitude', config: { required: true, options: [{ value: 0, label: 'No difficulty getting started' }, { value: 2, label: 'Difficulties starting activities' }, { value: 4, label: 'Difficulties with routine' }, { value: 6, label: 'Complete lassitude' }] } },
+        { id: 8, type: 'radio', label: '8. Inability to Feel', config: { required: true, options: [{ value: 0, label: 'Normal interest in surroundings' }, { value: 2, label: 'Reduced interest in surroundings' }, { value: 4, label: 'Loss of interest' }, { value: 6, label: 'Total inability to feel' }] } },
+        { id: 9, type: 'radio', label: '9. Pessimistic Thoughts', config: { required: true, options: [{ value: 0, label: 'No pessimistic thoughts' }, { value: 2, label: 'Fluctuating pessimism' }, { value: 4, label: 'Persistent self-accusations' }, { value: 6, label: 'Delusions of ruin and guilt' }] } },
+        { id: 10, type: 'radio', label: '10. Suicidal Thoughts', config: { required: true, options: [{ value: 0, label: 'Enjoys life' }, { value: 2, label: 'Weary of life' }, { value: 4, label: 'Wishes to be dead' }, { value: 6, label: 'Explicit suicide plans' }] } }
+      ]
+    },
+    {
+      id: 15,
+      name: 'KCCQ (Kansas City Cardiomyopathy)',
+      category: 'Clinical Scales',
+      description: 'Heart failure health status questionnaire with 23 items',
+      fields: 23,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        { id: 1, type: 'radio', label: 'Heart failure limits showering/bathing', config: { required: true, options: [{ value: 1, label: 'Extremely limited' }, { value: 2, label: 'Quite a bit limited' }, { value: 3, label: 'Moderately limited' }, { value: 4, label: 'Slightly limited' }, { value: 5, label: 'Not at all limited' }, { value: 6, label: 'Limited for other reasons' }] } },
+        { id: 2, type: 'radio', label: 'Heart failure limits walking 1 block', config: { required: true, options: [{ value: 1, label: 'Extremely limited' }, { value: 2, label: 'Quite a bit limited' }, { value: 3, label: 'Moderately limited' }, { value: 4, label: 'Slightly limited' }, { value: 5, label: 'Not at all limited' }, { value: 6, label: 'Limited for other reasons' }] } },
+        { id: 3, type: 'radio', label: 'Heart failure limits hurrying/jogging', config: { required: true, options: [{ value: 1, label: 'Extremely limited' }, { value: 2, label: 'Quite a bit limited' }, { value: 3, label: 'Moderately limited' }, { value: 4, label: 'Slightly limited' }, { value: 5, label: 'Not at all limited' }, { value: 6, label: 'Limited for other reasons' }] } },
+        { id: 4, type: 'radio', label: 'Heart failure limits hobbies/recreation', config: { required: true, options: [{ value: 1, label: 'Extremely limited' }, { value: 2, label: 'Quite a bit limited' }, { value: 3, label: 'Moderately limited' }, { value: 4, label: 'Slightly limited' }, { value: 5, label: 'Not at all limited' }, { value: 6, label: 'Limited for other reasons' }] } },
+        { id: 5, type: 'radio', label: 'Heart failure limits working/household chores', config: { required: true, options: [{ value: 1, label: 'Extremely limited' }, { value: 2, label: 'Quite a bit limited' }, { value: 3, label: 'Moderately limited' }, { value: 4, label: 'Slightly limited' }, { value: 5, label: 'Not at all limited' }, { value: 6, label: 'Limited for other reasons' }] } },
+        { id: 6, type: 'radio', label: 'Heart failure limits visiting family/friends', config: { required: true, options: [{ value: 1, label: 'Extremely limited' }, { value: 2, label: 'Quite a bit limited' }, { value: 3, label: 'Moderately limited' }, { value: 4, label: 'Slightly limited' }, { value: 5, label: 'Not at all limited' }, { value: 6, label: 'Limited for other reasons' }] } },
+        { id: 7, type: 'radio', label: 'Swelling in feet/ankles/legs (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'Severely bothersome' }, { value: 2, label: 'Quite a bit' }, { value: 3, label: 'Moderately' }, { value: 4, label: 'Slightly' }, { value: 5, label: 'Not at all' }, { value: 6, label: 'Did not have' }] } },
+        { id: 8, type: 'radio', label: 'Fatigue (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'Severely bothersome' }, { value: 2, label: 'Quite a bit' }, { value: 3, label: 'Moderately' }, { value: 4, label: 'Slightly' }, { value: 5, label: 'Not at all' }, { value: 6, label: 'Did not have' }] } },
+        { id: 9, type: 'radio', label: 'Shortness of breath (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'Severely bothersome' }, { value: 2, label: 'Quite a bit' }, { value: 3, label: 'Moderately' }, { value: 4, label: 'Slightly' }, { value: 5, label: 'Not at all' }, { value: 6, label: 'Did not have' }] } },
+        { id: 10, type: 'radio', label: 'Need to rest during the day (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'All the time' }, { value: 2, label: 'Several times per day' }, { value: 3, label: 'At least once a day' }, { value: 4, label: '3 or more times a week' }, { value: 5, label: '1-2 times a week' }, { value: 6, label: 'Never' }] } },
+        { id: 11, type: 'radio', label: 'Shortness of breath lying flat (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'Every night' }, { value: 2, label: '3 or more times a week' }, { value: 3, label: '1-2 times a week' }, { value: 4, label: 'Less than once a week' }, { value: 5, label: 'Never' }] } },
+        { id: 12, type: 'radio', label: 'Shortness of breath on waking (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'Every morning' }, { value: 2, label: '3 or more times a week' }, { value: 3, label: '1-2 times a week' }, { value: 4, label: 'Less than once a week' }, { value: 5, label: 'Never' }] } },
+        { id: 13, type: 'radio', label: 'Frequency of heart failure symptoms', config: { required: true, options: [{ value: 1, label: 'All the time' }, { value: 2, label: 'Several times per day' }, { value: 3, label: 'At least once a day' }, { value: 4, label: '3 or more times a week' }, { value: 5, label: '1-2 times a week' }, { value: 6, label: 'Never' }] } },
+        { id: 14, type: 'radio', label: 'How much does HF affect lifestyle', config: { required: true, options: [{ value: 1, label: 'Severely restricted' }, { value: 2, label: 'Restricted quite a bit' }, { value: 3, label: 'Moderately restricted' }, { value: 4, label: 'Slightly restricted' }, { value: 5, label: 'Not at all' }] } },
+        { id: 15, type: 'radio', label: 'If symptoms worsened, would you know', config: { required: true, options: [{ value: 1, label: 'I would not know' }, { value: 2, label: 'Probably not know' }, { value: 3, label: 'Probably know' }, { value: 4, label: 'Definitely know' }, { value: 5, label: 'Does not apply' }] } },
+        { id: 16, type: 'radio', label: 'If symptoms worsened, what would you do', config: { required: true, options: [{ value: 1, label: 'Would not know what to do' }, { value: 2, label: 'Probably not know' }, { value: 3, label: 'Probably know' }, { value: 4, label: 'Definitely know' }, { value: 5, label: 'Does not apply' }] } },
+        { id: 17, type: 'radio', label: 'Understanding of things you can do', config: { required: true, options: [{ value: 1, label: 'Do not understand' }, { value: 2, label: 'Do not understand most' }, { value: 3, label: 'Understand most' }, { value: 4, label: 'Completely understand' }, { value: 5, label: 'Does not apply' }] } },
+        { id: 18, type: 'radio', label: 'Felt discouraged/down (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'All the time' }, { value: 2, label: 'Most of the time' }, { value: 3, label: 'Some of the time' }, { value: 4, label: 'Rarely' }, { value: 5, label: 'Never' }] } },
+        { id: 19, type: 'radio', label: 'Felt burden on family/friends (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'All the time' }, { value: 2, label: 'Most of the time' }, { value: 3, label: 'Some of the time' }, { value: 4, label: 'Rarely' }, { value: 5, label: 'Never' }] } },
+        { id: 20, type: 'radio', label: 'Felt loss of control (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'All the time' }, { value: 2, label: 'Most of the time' }, { value: 3, label: 'Some of the time' }, { value: 4, label: 'Rarely' }, { value: 5, label: 'Never' }] } },
+        { id: 21, type: 'radio', label: 'HF concerns or worries (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'All the time' }, { value: 2, label: 'Most of the time' }, { value: 3, label: 'Some of the time' }, { value: 4, label: 'Rarely' }, { value: 5, label: 'Never' }] } },
+        { id: 22, type: 'radio', label: 'Side effects from medications (past 2 weeks)', config: { required: true, options: [{ value: 1, label: 'All the time' }, { value: 2, label: 'Most of the time' }, { value: 3, label: 'Some of the time' }, { value: 4, label: 'Rarely' }, { value: 5, label: 'Never' }, { value: 6, label: 'No medications' }] } },
+        { id: 23, type: 'radio', label: 'How would you rate health today', config: { required: true, options: [{ value: 0, label: 'Poor' }, { value: 25, label: 'Fair' }, { value: 50, label: 'Good' }, { value: 75, label: 'Very Good' }, { value: 100, label: 'Excellent' }] } }
+      ]
+    },
+    {
+      id: 16,
+      name: 'PedsQL (Pediatric Quality of Life)',
+      category: 'Clinical Scales',
+      description: 'Generic pediatric QoL scale for ages 5-18 with physical/emotional/social/school functioning',
+      fields: 23,
+      lastUsed: 'Never',
+      usageCount: 0,
+      components: [
+        { id: 1, type: 'radio', label: 'Physical - Walking more than one block', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 2, type: 'radio', label: 'Physical - Running', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 3, type: 'radio', label: 'Physical - Participating in sports', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 4, type: 'radio', label: 'Physical - Lifting something heavy', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 5, type: 'radio', label: 'Physical - Taking a bath/shower', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 6, type: 'radio', label: 'Physical - Doing chores', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 7, type: 'radio', label: 'Physical - Hurting or aching', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 8, type: 'radio', label: 'Physical - Low energy', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 9, type: 'radio', label: 'Emotional - Feeling afraid or scared', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 10, type: 'radio', label: 'Emotional - Feeling sad or blue', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 11, type: 'radio', label: 'Emotional - Feeling angry', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 12, type: 'radio', label: 'Emotional - Trouble sleeping', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 13, type: 'radio', label: 'Emotional - Worrying about what will happen', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 14, type: 'radio', label: 'Social - Getting along with other children', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 15, type: 'radio', label: 'Social - Other kids not wanting to be friends', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 16, type: 'radio', label: 'Social - Getting teased', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 17, type: 'radio', label: 'Social - Not able to do things other children do', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 18, type: 'radio', label: 'Social - Hard to keep up when playing', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 19, type: 'radio', label: 'School - Paying attention in class', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 20, type: 'radio', label: 'School - Forgetting things', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 21, type: 'radio', label: 'School - Keeping up with schoolwork', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 22, type: 'radio', label: 'School - Missing school because not feeling well', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } },
+        { id: 23, type: 'radio', label: 'School - Missing school for doctor visits', config: { required: true, options: [{ value: 0, label: 'Never a problem' }, { value: 1, label: 'Almost never' }, { value: 2, label: 'Sometimes' }, { value: 3, label: 'Often' }, { value: 4, label: 'Almost always' }] } }
+      ]
     }
   ])
 
@@ -151,7 +923,7 @@ const Library = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [selectedStudy, setSelectedStudy] = useState('')
 
-  const categories = ['All', 'Standard', 'Medical', 'Safety', 'Assessment']
+  const categories = ['All', 'Standard', 'Medical', 'Safety', 'Assessment', 'Clinical Scales']
 
   // Load studies from localStorage
   useEffect(() => {
@@ -195,6 +967,8 @@ const Library = () => {
         return 'bg-red-50 text-red-700 border-red-200'
       case 'Assessment':
         return 'bg-purple-50 text-purple-700 border-purple-200'
+      case 'Clinical Scales':
+        return 'bg-indigo-50 text-indigo-700 border-indigo-200'
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200'
     }
@@ -260,10 +1034,16 @@ const Library = () => {
     alert('Template created successfully!')
   }
 
-  const handleDeleteTemplate = (templateId) => {
-    if (window.confirm('Are you sure you want to delete this template?')) {
-      setTemplates(templates.filter(t => t.id !== templateId))
-      alert('Template deleted successfully')
+  const handleArchiveTemplate = (templateId) => {
+    const template = templates.find(t => t.id === templateId)
+    const isArchived = template?.archived || false
+    const action = isArchived ? 'unarchive' : 'archive'
+
+    if (window.confirm(`Are you sure you want to ${action} this template?`)) {
+      setTemplates(templates.map(t =>
+        t.id === templateId ? { ...t, archived: !isArchived } : t
+      ))
+      alert(`Template ${isArchived ? 'unarchived' : 'archived'} successfully`)
     }
   }
 
@@ -410,12 +1190,20 @@ const Library = () => {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDeleteTemplate(template.id)}
-                    className="py-2 px-3 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium rounded-lg transition-colors"
-                    title="Delete"
+                    onClick={() => handleArchiveTemplate(template.id)}
+                    className={`py-2 px-3 ${
+                      template.archived
+                        ? 'bg-green-50 hover:bg-green-100 text-green-600'
+                        : 'bg-amber-50 hover:bg-amber-100 text-amber-600'
+                    } text-sm font-medium rounded-lg transition-colors`}
+                    title={template.archived ? 'Unarchive' : 'Archive'}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      {template.archived ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                      ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                      )}
                     </svg>
                   </button>
                 </div>

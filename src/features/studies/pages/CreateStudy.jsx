@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useAuth from '../../../shared/hooks/useAuth'
 import { ROLES } from '../../access/constants/roles'
 
 const CreateStudy = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [searchParams] = useSearchParams()
 
   const [formData, setFormData] = useState({
     name: '',
@@ -14,6 +15,7 @@ const CreateStudy = () => {
     phase: '',
     sponsor: '',
     therapeuticArea: '',
+    customTherapeuticArea: '',
     description: '',
     startDate: '',
     endDate: ''
@@ -21,8 +23,46 @@ const CreateStudy = () => {
 
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCloning, setIsCloning] = useState(false)
 
   const phases = ['Phase I', 'Phase II', 'Phase III', 'Phase IV']
+
+  // Handle clone functionality
+  useEffect(() => {
+    try {
+      // Check for clone data in sessionStorage
+      const cloneDataStr = sessionStorage.getItem('cloneStudyData')
+      console.log('Clone data from sessionStorage:', cloneDataStr)
+
+      if (cloneDataStr) {
+        const cloneData = JSON.parse(cloneDataStr)
+        console.log('Parsed clone data:', cloneData)
+
+        setIsCloning(true)
+
+        // Pre-fill form with cloned study data
+        const filledData = {
+          name: `${cloneData.name} (Copy)`,
+          code: cloneData.code ? `${cloneData.code}-COPY` : '',
+          protocolId: cloneData.protocolId || cloneData.protocol || '',
+          phase: cloneData.phase || '',
+          sponsor: cloneData.sponsor || '',
+          therapeuticArea: cloneData.therapeuticArea || '',
+          customTherapeuticArea: cloneData.customTherapeuticArea || '',
+          description: cloneData.description || '',
+          startDate: cloneData.startDate || '',
+          endDate: cloneData.endDate || ''
+        }
+        console.log('Setting form data:', filledData)
+        setFormData(filledData)
+
+        // Clear the sessionStorage after reading
+        sessionStorage.removeItem('cloneStudyData')
+      }
+    } catch (error) {
+      console.error('Error loading study to clone:', error)
+    }
+  }, [])
 
   const therapeuticAreas = [
     'Oncology',
@@ -66,16 +106,16 @@ const CreateStudy = () => {
       newErrors.protocolId = 'Protocol ID is required'
     }
 
-    if (!formData.phase) {
-      newErrors.phase = 'Study phase is required'
-    }
-
     if (!formData.sponsor.trim()) {
       newErrors.sponsor = 'Sponsor is required'
     }
 
     if (!formData.therapeuticArea) {
       newErrors.therapeuticArea = 'Therapeutic area is required'
+    }
+
+    if (formData.therapeuticArea === 'Other' && !formData.customTherapeuticArea.trim()) {
+      newErrors.customTherapeuticArea = 'Please specify the therapeutic area'
     }
 
     if (formData.startDate && formData.endDate) {
@@ -108,6 +148,7 @@ const CreateStudy = () => {
         const newStudy = {
           id: newStudyId,
           ...formData,
+          therapeuticArea: formData.therapeuticArea === 'Other' ? formData.customTherapeuticArea : formData.therapeuticArea,
           status: 'Draft',
           patients: 0,
           sites: 0,
@@ -152,8 +193,12 @@ const CreateStudy = () => {
           </button>
 
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Create New Study</h1>
-            <p className="text-sm text-gray-500 mt-1">Set up a new clinical study</p>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {isCloning ? 'Clone Study' : 'Create New Study'}
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {isCloning ? 'Create a new study from an existing one' : 'Set up a new clinical study'}
+            </p>
           </div>
         </div>
       </div>
@@ -232,23 +277,20 @@ const CreateStudy = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="phase" className="block text-sm font-medium text-gray-700 mb-2">
-                    Study Phase <span className="text-red-500">*</span>
+                    Study Phase
                   </label>
                   <select
                     id="phase"
                     name="phase"
                     value={formData.phase}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2.5 border ${
-                      errors.phase ? 'border-red-300' : 'border-gray-300'
-                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white`}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
                   >
-                    <option value="">Select phase</option>
+                    <option value="">Select phase (optional)</option>
                     {phases.map(phase => (
                       <option key={phase} value={phase}>{phase}</option>
                     ))}
                   </select>
-                  {errors.phase && <p className="mt-1 text-xs text-red-600">{errors.phase}</p>}
                 </div>
 
                 <div>
@@ -290,6 +332,24 @@ const CreateStudy = () => {
                   ))}
                 </select>
                 {errors.therapeuticArea && <p className="mt-1 text-xs text-red-600">{errors.therapeuticArea}</p>}
+
+                {/* Conditional input for custom therapeutic area */}
+                {formData.therapeuticArea === 'Other' && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      id="customTherapeuticArea"
+                      name="customTherapeuticArea"
+                      value={formData.customTherapeuticArea}
+                      onChange={handleChange}
+                      placeholder="Please specify therapeutic area"
+                      className={`w-full px-4 py-2.5 border ${
+                        errors.customTherapeuticArea ? 'border-red-300' : 'border-gray-300'
+                      } rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent`}
+                    />
+                    {errors.customTherapeuticArea && <p className="mt-1 text-xs text-red-600">{errors.customTherapeuticArea}</p>}
+                  </div>
+                )}
               </div>
 
               {/* Start Date and End Date */}

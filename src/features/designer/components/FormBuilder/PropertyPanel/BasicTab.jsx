@@ -83,6 +83,11 @@ const BasicTab = ({ component, onUpdateComponent, onUpdateConfig }) => {
       {component.type === 'file' && (
         <FileConfig component={component} onUpdateConfig={onUpdateConfig} />
       )}
+
+      {/* VAS Scale specific options */}
+      {component.type === 'vas' && (
+        <VASConfig component={component} onUpdateConfig={onUpdateConfig} />
+      )}
     </div>
   )
 }
@@ -244,5 +249,189 @@ const FileConfig = ({ component, onUpdateConfig }) => (
     </div>
   </div>
 )
+
+const VASConfig = ({ component, onUpdateConfig }) => {
+  // ========== VALUE EXTRACTION ==========
+  // Extract values from config with proper defaults
+  const vasMin = component.config?.vasMin ?? 0
+  const vasMax = component.config?.vasMax ?? 10
+  const vasInterval = component.config?.vasInterval // Can be undefined
+
+  // ========== RANGE CALCULATION ==========
+  // Calculate the actual range of the scale
+  const range = Math.abs(vasMax - vasMin)
+
+  // ========== SUGGESTED INTERVAL LOGIC ==========
+  // Calculate smart suggested interval based on range
+  const getSuggestedInterval = (rangeValue) => {
+    if (rangeValue <= 0) return 1
+    if (rangeValue <= 10) return 1
+    if (rangeValue <= 20) return 2
+    if (rangeValue <= 50) return 5
+    if (rangeValue <= 100) return 10
+    if (rangeValue <= 200) return 20
+    if (rangeValue <= 500) return 50
+    if (rangeValue <= 1000) return 100
+    // For larger ranges, use range/10 rounded to nearest 10
+    return Math.ceil(rangeValue / 100) * 10
+  }
+
+  const suggestedInterval = getSuggestedInterval(range)
+
+  // ========== VALIDATION ==========
+  // Check if the interval is valid
+  const validateInterval = (interval, rangeValue) => {
+    if (interval === undefined || interval === null) return { isValid: true, error: null }
+    if (interval <= 0) return { isValid: false, error: 'Interval must be greater than 0' }
+    if (rangeValue > 0 && interval > rangeValue) {
+      return {
+        isValid: false,
+        error: `Interval (${interval}) cannot be larger than the range (${rangeValue})`
+      }
+    }
+    return { isValid: true, error: null }
+  }
+
+  const validation = validateInterval(vasInterval, range)
+
+  // ========== EVENT HANDLERS ==========
+  const handleMinChange = (e) => {
+    const value = parseFloat(e.target.value)
+    onUpdateConfig('vasMin', isNaN(value) ? 0 : value)
+  }
+
+  const handleMaxChange = (e) => {
+    const value = parseFloat(e.target.value)
+    onUpdateConfig('vasMax', isNaN(value) ? 10 : value)
+  }
+
+  const handleIntervalChange = (e) => {
+    const inputValue = e.target.value.trim()
+
+    // If empty, clear the interval
+    if (inputValue === '') {
+      onUpdateConfig('vasInterval', undefined)
+      return
+    }
+
+    // Parse the numeric value
+    const numValue = parseFloat(inputValue)
+
+    // Validate and save only if it's a valid positive number
+    if (!isNaN(numValue) && numValue > 0) {
+      onUpdateConfig('vasInterval', numValue)
+    }
+  }
+
+  return (
+    <div className="space-y-4 border-t border-gray-200 pt-4">
+      {/* ========== SCALE RANGE ========== */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 mb-2">Scale Range</label>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Min Value</label>
+            <input
+              type="number"
+              value={vasMin}
+              onChange={handleMinChange}
+              step="any"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Max Value</label>
+            <input
+              type="number"
+              value={vasMax}
+              onChange={handleMaxChange}
+              step="any"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+        </div>
+        <p className="text-xs text-gray-500 mt-1">
+          Range: {range} {range !== 10 && '(Default: 0-10)'} • Orientation: Vertical
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-gray-700 mb-2">Scale Labels</label>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Min Label</label>
+            <input
+              type="text"
+              value={component.config?.vasMinLabel || ''}
+              onChange={(e) => onUpdateConfig('vasMinLabel', e.target.value)}
+              placeholder="e.g., No Pain"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Max Label</label>
+            <input
+              type="text"
+              value={component.config?.vasMaxLabel || ''}
+              onChange={(e) => onUpdateConfig('vasMaxLabel', e.target.value)}
+              placeholder="e.g., Worst Pain"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+        </div>
+        <p className="text-xs text-gray-500 mt-1">Optional labels to describe min/max values</p>
+      </div>
+
+      {/* ========== INTERVAL ========== */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 mb-2">Interval</label>
+        <input
+          type="number"
+          value={vasInterval ?? ''}
+          onChange={handleIntervalChange}
+          step="any"
+          min="0.01"
+          placeholder={`${suggestedInterval} (suggested for range ${range})`}
+          className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+            !validation.isValid ? 'border-red-500 bg-red-50' : 'border-gray-300'
+          }`}
+        />
+
+        {/* Help Text */}
+        <p className="text-xs text-gray-500 mt-1">
+          Step size for scale markers. Examples: 1 → (0, 1, 2...), 10 → (0, 10, 20...), 2.5 → (0, 2.5, 5...). Accepts decimals.
+        </p>
+
+        {/* Validation Error */}
+        {!validation.isValid && (
+          <div className="mt-2 p-3 bg-red-50 border border-red-300 rounded-lg animate-shake">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-red-800 mb-1">Invalid Configuration</p>
+                <p className="text-sm text-red-700 mb-2">{validation.error}</p>
+
+                <div className="bg-white rounded p-2 border border-red-200 text-xs font-mono space-y-1">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>Min Value: <strong>{vasMin}</strong></div>
+                    <div>Max Value: <strong>{vasMax}</strong></div>
+                    <div>Range: <strong>{range}</strong></div>
+                    <div>Interval: <strong className="text-red-600">{vasInterval}</strong></div>
+                  </div>
+                </div>
+
+                <p className="text-xs text-red-700 mt-2 font-medium">
+                  ✓ Solution: Set interval to {suggestedInterval} or less (max: {range})
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default BasicTab

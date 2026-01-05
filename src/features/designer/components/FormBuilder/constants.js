@@ -1,8 +1,6 @@
 // Form Builder Constants
 
 export const COMPONENT_TYPES = [
-  { id: 'text', name: 'Single Line Text', icon: '📝', description: 'For names, IDs, short answers' },
-  { id: 'textarea', name: 'Multi Line Text', icon: '📄', description: 'For descriptions, comments' },
   { id: 'number', name: 'Number Input', icon: '🔢', description: 'Numeric values only' },
   { id: 'date', name: 'Date Picker', icon: '📅', description: 'Date selection' },
   { id: 'radio', name: 'Radio Button', icon: '🔘', description: 'Single choice from options' },
@@ -10,7 +8,8 @@ export const COMPONENT_TYPES = [
   { id: 'dropdown', name: 'Dropdown', icon: '▼', description: 'Select from dropdown list' },
   { id: 'vas', name: 'VAS Scale', icon: '━━', description: 'Continuous slider (0-10)' },
   { id: 'image', name: 'Image Capture', icon: '📷', description: 'Capture or upload images' },
-  { id: 'file', name: 'File Upload', icon: '📎', description: 'Upload documents/files' }
+  { id: 'text', name: 'Single Line Text', icon: '📝', description: 'For names, IDs, short answers' },
+  { id: 'textarea', name: 'Multi Line Text', icon: '📄', description: 'For descriptions, comments' }
 ]
 
 export const DEFAULT_COMPONENT_CONFIG = {

@@ -8,6 +8,8 @@ export const useFormBuilder = (studyId, formId) => {
   const [selectedComponent, setSelectedComponent] = useState(null)
   const [canvasComponents, setCanvasComponents] = useState([])
   const [formName, setFormName] = useState(formId ? `Form ${formId}` : 'New Form')
+  const [pendingComponent, setPendingComponent] = useState(null)
+  const [showWarningModal, setShowWarningModal] = useState(false)
 
   // Load existing form data when editing
   useEffect(() => {
@@ -29,8 +31,16 @@ export const useFormBuilder = (studyId, formId) => {
     e.preventDefault()
     const componentType = e.dataTransfer.getData('componentType')
     if (componentType) {
-      const newComponent = createNewComponent(componentType, canvasComponents.length)
-      setCanvasComponents(prev => [...prev, newComponent])
+      // Check if it's SLT or MLT - show warning
+      if (componentType === 'text' || componentType === 'textarea') {
+        const newComponent = createNewComponent(componentType, canvasComponents.length)
+        setPendingComponent(newComponent)
+        setShowWarningModal(true)
+      } else {
+        // Add other components directly
+        const newComponent = createNewComponent(componentType, canvasComponents.length)
+        setCanvasComponents(prev => [...prev, newComponent])
+      }
     }
   }, [canvasComponents.length])
 
@@ -81,6 +91,21 @@ export const useFormBuilder = (studyId, formId) => {
     setSelectedComponent(prev => ({ ...prev, config: newConfig }))
   }, [canvasComponents, selectedComponent])
 
+  // Confirm adding SLT/MLT component
+  const confirmAddComponent = useCallback(() => {
+    if (pendingComponent) {
+      setCanvasComponents(prev => [...prev, pendingComponent])
+      setPendingComponent(null)
+      setShowWarningModal(false)
+    }
+  }, [pendingComponent])
+
+  // Cancel adding SLT/MLT component
+  const cancelAddComponent = useCallback(() => {
+    setPendingComponent(null)
+    setShowWarningModal(false)
+  }, [])
+
   // Save form
   const saveForm = useCallback((navigate) => {
     const savedForms = localStorage.getItem(`study-${studyId}-forms`)
@@ -115,6 +140,7 @@ export const useFormBuilder = (studyId, formId) => {
     selectedComponent,
     canvasComponents,
     formName,
+    showWarningModal,
 
     // Setters
     setSelectedComponent,
@@ -127,6 +153,8 @@ export const useFormBuilder = (studyId, formId) => {
     removeComponent,
     updateComponent,
     updateConfig,
-    saveForm
+    saveForm,
+    confirmAddComponent,
+    cancelAddComponent
   }
 }
