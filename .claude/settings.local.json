@@ -20,7 +20,10 @@
       "Bash(ls:*)",
       "Bash(dir:*)",
       "Bash(echo:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(npm install:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(git remote:*)"
     ]
   }
 }

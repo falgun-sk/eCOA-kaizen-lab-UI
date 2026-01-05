@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { studiesAPI } from '../../../shared/services/api'
+import { studiesApi } from '../../../shared/services/api'
 import useAuth from '../../../shared/hooks/useAuth'
 
 /**
@@ -114,9 +114,12 @@ const Studies = () => {
 
         // Try to fetch from API
         try {
-          const data = await studiesAPI.getAll({ search: searchQuery })
+          const data = await studiesApi.getStudies({ search: searchQuery })
+          // studiesApi returns a StudyListResponse { data, total, page, pageSize }
+          // but the component expects an array of studies. Normalize here.
+          const apiStudies = Array.isArray(data) ? data : data.data || []
           // Combine API data with local studies
-          const combinedStudies = [...localStudies, ...data]
+          const combinedStudies = [...localStudies, ...apiStudies]
           setStudies(combinedStudies)
         } catch (apiErr) {
           console.log('API not available, using localStorage and mock data')
@@ -163,7 +166,10 @@ const Studies = () => {
 
   // Apply filters
   useEffect(() => {
-    let result = [...studies]
+    // Ensure `studies` is an array before operating on it
+    const base = Array.isArray(studies) ? studies : []
+
+    let result = [...base]
 
     if (statusFilter !== 'all') {
       result = result.filter((study) => study.status === statusFilter)
