@@ -13,7 +13,7 @@ const Docs = () => {
       version: 'v2.3',
       size: '3.2 MB',
       lastUpdated: '2 days ago',
-      updatedBy: 'M1'
+      updatedBy: 'John Doe'
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ const Docs = () => {
       version: 'v1.5',
       size: '1.8 MB',
       lastUpdated: '1 week ago',
-      updatedBy: 'M2'
+      updatedBy: 'Jane Smith'
     },
     {
       id: 3,
@@ -33,7 +33,7 @@ const Docs = () => {
       version: 'v1.2',
       size: '1.1 MB',
       lastUpdated: '2 weeks ago',
-      updatedBy: 'M3'
+      updatedBy: 'Mike Johnson'
     }
   ]
 

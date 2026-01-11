@@ -148,9 +148,24 @@ const DashboardLayout = () => {
           {/* Navigation */}
           <nav className="flex-1 px-3 py-4 space-y-1">
           {navigation.filter((item) => {
+            // Debug logging
+            console.log('Filtering item:', item.name, 'path:', item.path)
+            console.log('hasRole(ROLES.ADMIN):', hasRole(ROLES.ADMIN))
+            console.log('ROLES.ADMIN:', ROLES.ADMIN)
+
+            // Hide Home page for admin users
+            if (item.path === '/dashboard') {
+              const shouldShow = !hasRole(ROLES.ADMIN)
+              console.log('Home - shouldShow:', shouldShow)
+              return shouldShow
+            }
             // Only show Access link to admin users
             if (item.path === '/access') {
               return hasRole(ROLES.ADMIN)
+            }
+            // Hide Settings for all users
+            if (item.path === '/settings') {
+              return false
             }
             return true
           }).map((item) => (

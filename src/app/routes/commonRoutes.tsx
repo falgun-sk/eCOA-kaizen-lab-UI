@@ -4,9 +4,10 @@ import ProtectedRoute from '../../shared/components/ProtectedRoute'
 import { ROLES } from '../../features/access/constants/roles'
 
 // Pages
-import Dashboard from '../../features/dashboard/pages/Dashboard'
+import DashboardWrapper from '../../features/dashboard/pages/DashboardWrapper'
 import Access from '../../features/access/pages/Access'
 import Reports from '../../features/studies/pages/Reports'
+import Tasks from '../../features/dashboard/pages/Tasks'
 import Placeholder from '../../shared/components/Placeholder'
 
 /**
@@ -17,25 +18,32 @@ export const commonRoutes = (
     {/* Root redirect */}
     <Route path="/" element={<MainLayout><Navigate to="/dashboard" replace /></MainLayout>} />
 
-    {/* Dashboard */}
-    <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
+    {/* Dashboard - handles role-based redirects internally */}
+    <Route
+      path="/dashboard"
+      element={
+        <MainLayout>
+          <DashboardWrapper />
+        </MainLayout>
+      }
+    />
 
     {/* Tasks */}
     <Route
       path="/tasks"
       element={
         <MainLayout>
-          <Placeholder title="Tasks" description="Task management & assignments" />
+          <Tasks />
         </MainLayout>
       }
     />
 
-    {/* Access Management (Admin only) */}
+    {/* Access Management (Admin and Project Manager) */}
     <Route
       path="/access"
       element={
         <MainLayout>
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.PROJECT_MANAGER]}>
             <Access />
           </ProtectedRoute>
         </MainLayout>
@@ -50,16 +58,6 @@ export const commonRoutes = (
           <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.DATA_MANAGER]}>
             <Reports />
           </ProtectedRoute>
-        </MainLayout>
-      }
-    />
-
-    {/* Settings */}
-    <Route
-      path="/settings"
-      element={
-        <MainLayout>
-          <Placeholder title="Settings" description="Configure your account settings" />
         </MainLayout>
       }
     />

@@ -185,6 +185,78 @@ export const mockUsers: MockUser[] = [
     status: USER_STATUS.ACTIVE,
     lastActive: '2025-01-14T18:00:00Z',
     createdAt: '2025-01-18T00:00:00Z'
+  },
+  {
+    id: 19,
+    name: 'Jessica Thompson',
+    email: 'jessica.thompson@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.ACTIVE,
+    lastActive: '2025-01-15T09:30:00Z',
+    createdAt: '2025-01-19T00:00:00Z'
+  },
+  {
+    id: 20,
+    name: 'Andrew Mitchell',
+    email: 'andrew.mitchell@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.ACTIVE,
+    lastActive: '2025-01-15T11:15:00Z',
+    createdAt: '2025-01-20T00:00:00Z'
+  },
+  {
+    id: 21,
+    name: 'Rachel Foster',
+    email: 'rachel.foster@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.ACTIVE,
+    lastActive: '2025-01-15T10:45:00Z',
+    createdAt: '2025-01-21T00:00:00Z'
+  },
+  {
+    id: 22,
+    name: 'Kevin Sanders',
+    email: 'kevin.sanders@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.INACTIVE,
+    lastActive: '2025-01-13T14:20:00Z',
+    createdAt: '2025-01-22T00:00:00Z'
+  },
+  {
+    id: 23,
+    name: 'Michelle Brooks',
+    email: 'michelle.brooks@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.ACTIVE,
+    lastActive: '2025-01-15T08:50:00Z',
+    createdAt: '2025-01-23T00:00:00Z'
+  },
+  {
+    id: 24,
+    name: 'Steven Phillips',
+    email: 'steven.phillips@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.ACTIVE,
+    lastActive: '2025-01-15T12:30:00Z',
+    createdAt: '2025-01-24T00:00:00Z'
+  },
+  {
+    id: 25,
+    name: 'Angela Bennett',
+    email: 'angela.bennett@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.ACTIVE,
+    lastActive: '2025-01-15T09:00:00Z',
+    createdAt: '2025-01-25T00:00:00Z'
+  },
+  {
+    id: 26,
+    name: 'Brian Coleman',
+    email: 'brian.coleman@ecoa.com',
+    role: ROLES.PROJECT_MANAGER,
+    status: USER_STATUS.PENDING,
+    lastActive: '2025-01-10T00:00:00Z',
+    createdAt: '2025-01-26T00:00:00Z'
   }
 ]
 

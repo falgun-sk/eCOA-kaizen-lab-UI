@@ -1,8 +1,6 @@
 import { useState, useEffect, ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { studiesApi } from '../../../shared/services/api'
-import useAuth from '../../../shared/hooks/useAuth'
-import { ROLES } from '../../access/constants/roles'
 
 interface Study {
   id: number
@@ -17,16 +15,11 @@ interface Study {
 
 const Dashboard = () => {
   const navigate = useNavigate()
-  const { user } = useAuth()
   const [studies, setStudies] = useState<Study[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    if (user?.role === ROLES.STUDY_DESIGNER) {
-      navigate('/designer/dashboard', { replace: true })
-    }
-  }, [user, navigate])
+  // Load studies on mount
 
   const getMockStudies = (): Study[] => [
     {

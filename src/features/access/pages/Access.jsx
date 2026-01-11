@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { usersApi } from '../../../shared/services/api'
 import { getMockUsers, createMockUser, updateMockUser, deleteMockUser } from '../data/mockUsers'
-import { getAllRoles, getAllStatuses } from '../constants/roles'
+import { getAllRoles, getAllStatuses, ROLES } from '../constants/roles'
 import UserTable from '../components/UserTable'
 import Pagination from '../../../shared/components/Pagination'
 import AddUserModal from '../components/AddUserModal'
@@ -9,6 +9,7 @@ import EditUserModal from '../components/EditUserModal'
 import DeleteConfirmModal from '../components/DeleteConfirmModal'
 import RolePermissionsView from '../components/RolePermissionsView'
 import UserPermissionsModal from '../components/UserPermissionsModal'
+import useAuth from '../../../shared/hooks/useAuth'
 
 /**
  * Access Management Page
@@ -20,6 +21,10 @@ import UserPermissionsModal from '../components/UserPermissionsModal'
  * - Add/Edit/Delete operations
  */
 const Access = () => {
+  // Get current user
+  const { user } = useAuth()
+  const isAdmin = user?.role === ROLES.ADMIN
+
   // Tab state
   const [activeTab, setActiveTab] = useState('users') // 'users' or 'permissions'
 
@@ -61,15 +66,12 @@ const Access = () => {
     setIsLoading(true)
     setError(null)
     try {
-      // Try to fetch from API (will use mock data fallback)
-      const response = await usersApi.getUsers()
-      // API returns { data: [...], total, page, pageSize }
-      setUsers(response.data || [])
-    } catch (err) {
-      console.error('Error fetching users:', err)
-      // Fallback to mock data
+      // Use mock data directly for now
       const mockData = getMockUsers()
       setUsers(mockData)
+    } catch (err) {
+      console.error('Error fetching users:', err)
+      setUsers([])
     } finally {
       setIsLoading(false)
     }
@@ -78,6 +80,11 @@ const Access = () => {
   // Apply filters and search
   useEffect(() => {
     let result = [...users]
+
+    // For non-admin users, only show users with the same role
+    if (!isAdmin && user?.role) {
+      result = result.filter((u) => u.role === user.role)
+    }
 
     // Apply search filter
     if (searchQuery) {
@@ -101,7 +108,7 @@ const Access = () => {
 
     setFilteredUsers(result)
     setCurrentPage(1) // Reset to first page when filters change
-  }, [users, searchQuery, roleFilter, statusFilter])
+  }, [users, searchQuery, roleFilter, statusFilter, isAdmin, user])
 
   // Debounced search
   useEffect(() => {
@@ -209,12 +216,14 @@ const Access = () => {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Access Management</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {isAdmin ? 'Access Management' : 'Team Directory'}
+            </h1>
             <p className="text-sm text-gray-500 mt-1">
-              Manage user access and permissions
+              {isAdmin ? 'Manage user access and permissions' : 'View team members and their roles'}
             </p>
           </div>
-          {activeTab === 'users' && (
+          {activeTab === 'users' && isAdmin && (
             <button
               onClick={() => setShowAddModal(true)}
               className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-semibold rounded-lg shadow-md shadow-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 transition-all duration-200"
@@ -237,55 +246,57 @@ const Access = () => {
           )}
         </div>
 
-        {/* Tabs */}
-        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeTab === 'users'
-                ? 'bg-white text-orange-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {/* Tabs - Only show for Admin */}
+        {isAdmin && (
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'users'
+                  ? 'bg-white text-orange-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-            Users
-          </button>
-          <button
-            onClick={() => setActiveTab('permissions')}
-            className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeTab === 'permissions'
-                ? 'bg-white text-orange-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              Users
+            </button>
+            <button
+              onClick={() => setActiveTab('permissions')}
+              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'permissions'
+                  ? 'bg-white text-orange-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
-            Roles & Permissions
-          </button>
-        </div>
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+              Roles & Permissions
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Conditional Content Based on Active Tab */}
@@ -293,9 +304,70 @@ const Access = () => {
         <RolePermissionsView />
       ) : (
         <>
+          {/* Team Overview */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Total Team Members */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    {isAdmin ? 'Total Team Members' : 'Total Project Managers'}
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                    {isAdmin ? users.length : users.filter(u => u.role === user?.role).length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
 
-      {/* Search and Filters */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
+            {/* Active Users */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Active Users</p>
+                  <p className="text-3xl font-bold text-green-600 mt-2">
+                    {isAdmin
+                      ? users.filter(u => u.status === 'active').length
+                      : users.filter(u => u.role === user?.role && u.status === 'active').length
+                    }
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Pending Invites */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Pending Invites</p>
+                  <p className="text-3xl font-bold text-amber-600 mt-2">
+                    {isAdmin
+                      ? users.filter(u => u.status === 'pending').length
+                      : users.filter(u => u.role === user?.role && u.status === 'pending').length
+                    }
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="mb-4 flex flex-col sm:flex-row gap-4">
         {/* Search */}
         <div className="flex-1">
           <div className="relative">
@@ -383,71 +455,72 @@ const Access = () => {
             </button>
           </div>
         </div>
+          )}
+
+          {/* User Table */}
+          <div className="flex-1 mb-4">
+            <UserTable
+              users={currentUsers}
+              onEdit={isAdmin ? openEditModal : null}
+              onDelete={isAdmin ? openDeleteModal : null}
+              onViewPermissions={openPermissionsModal}
+              isLoading={isLoading}
+              isAdmin={isAdmin}
+            />
+          </div>
+
+          {/* Pagination */}
+          {!isLoading && filteredUsers.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredUsers.length}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize)
+                setCurrentPage(1)
+              }}
+            />
+          )}
+
+          {/* Modals */}
+          <AddUserModal
+            isOpen={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            onSubmit={handleAddUser}
+          />
+
+          <EditUserModal
+            isOpen={showEditModal}
+            onClose={() => {
+              setShowEditModal(false)
+              setSelectedUser(null)
+            }}
+            onSubmit={handleEditUser}
+            user={selectedUser}
+          />
+
+          <DeleteConfirmModal
+            isOpen={showDeleteModal}
+            onClose={() => {
+              setShowDeleteModal(false)
+              setSelectedUser(null)
+            }}
+            onConfirm={handleDeleteUser}
+            userName={selectedUser?.name || ''}
+          />
+
+          <UserPermissionsModal
+            isOpen={showPermissionsModal}
+            onClose={() => {
+              setShowPermissionsModal(false)
+              setSelectedUser(null)
+            }}
+            user={selectedUser}
+          />
+        </>
       )}
-
-      {/* User Table */}
-      <div className="flex-1 mb-6">
-        <UserTable
-          users={currentUsers}
-          onEdit={openEditModal}
-          onDelete={openDeleteModal}
-          onViewPermissions={openPermissionsModal}
-          isLoading={isLoading}
-        />
-      </div>
-
-      {/* Pagination */}
-      {!isLoading && filteredUsers.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={filteredUsers.length}
-          pageSize={pageSize}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={(newSize) => {
-            setPageSize(newSize)
-            setCurrentPage(1)
-          }}
-        />
-      )}
-
-      {/* Modals */}
-      <AddUserModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSubmit={handleAddUser}
-      />
-
-      <EditUserModal
-        isOpen={showEditModal}
-        onClose={() => {
-          setShowEditModal(false)
-          setSelectedUser(null)
-        }}
-        onSubmit={handleEditUser}
-        user={selectedUser}
-      />
-
-      <DeleteConfirmModal
-        isOpen={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false)
-          setSelectedUser(null)
-        }}
-        onConfirm={handleDeleteUser}
-        userName={selectedUser?.name || ''}
-      />
-
-      <UserPermissionsModal
-        isOpen={showPermissionsModal}
-        onClose={() => {
-          setShowPermissionsModal(false)
-          setSelectedUser(null)
-        }}
-        user={selectedUser}
-      />
-      </>
-    )}
     </div>
   )
 }

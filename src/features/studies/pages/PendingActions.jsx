@@ -9,7 +9,7 @@ const PendingActions = () => {
       id: 1,
       type: 'signature',
       title: 'Pending Sig on Form 1',
-      description: 'Awaiting signature from M1 and M3',
+      description: 'Awaiting signature from John Doe and Mike Johnson',
       priority: 'high',
       dueDate: 'Today'
     },
@@ -17,7 +17,7 @@ const PendingActions = () => {
       id: 2,
       type: 'review',
       title: 'Ongoing review of Form 2',
-      description: 'Currently under review by M3',
+      description: 'Currently under review by Mike Johnson',
       priority: 'medium',
       dueDate: 'Tomorrow'
     },

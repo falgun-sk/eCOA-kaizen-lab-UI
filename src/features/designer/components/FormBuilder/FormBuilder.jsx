@@ -71,8 +71,8 @@ const FormBuilder = () => {
         />
       </div>
 
-      {/* Footer with Action Buttons */}
-      <div className="bg-white border-t border-gray-200 px-8 py-4">
+      {/* Footer with Action Buttons - Sticky */}
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 px-8 py-4 shadow-lg z-10">
         <div className="flex items-center justify-end gap-3">
           <button
             onClick={handlePreview}

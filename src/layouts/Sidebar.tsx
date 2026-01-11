@@ -162,28 +162,6 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps) => {
           ))}
         </ul>
       </nav>
-
-      {user && !isCollapsed && (
-        <div className="px-4 py-3 border-t border-transparent">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
-              {user.name.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-              <p className="text-xs text-gray-500 truncate">{(user.role || '').replace('_', ' ')}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {user && isCollapsed && (
-        <div className="px-4 py-3 border-t border-transparent flex justify-center">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
-            {user.name.charAt(0).toUpperCase()}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -202,59 +202,6 @@ const ScheduledVisitFields = ({ visitData, setVisitData, visits, isEditing, sele
       </div>
     </div>
 
-    {/* Repeating Visit */}
-    <div>
-      <label className="flex items-center cursor-pointer">
-        <input
-          type="checkbox"
-          checked={visitData.repeats}
-          onChange={(e) => setVisitData({ ...visitData, repeats: e.target.checked })}
-          className="rounded text-orange-500 focus:ring-orange-500 mr-2"
-        />
-        <span className="text-sm text-gray-700">This visit repeats</span>
-      </label>
-    </div>
-
-    {visitData.repeats && (
-      <div className="pl-6 space-y-3 border-l-2 border-orange-200">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Every</label>
-            <input
-              type="number"
-              value={visitData.repeatEvery}
-              onChange={(e) => setVisitData({ ...visitData, repeatEvery: e.target.value })}
-              placeholder="28"
-              min="1"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Unit</label>
-            <select
-              value={visitData.repeatUnit}
-              onChange={(e) => setVisitData({ ...visitData, repeatUnit: e.target.value })}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
-            >
-              <option value="days">Days</option>
-              <option value="weeks">Weeks</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Repeat Until (cycles)</label>
-          <input
-            type="number"
-            value={visitData.repeatUntil}
-            onChange={(e) => setVisitData({ ...visitData, repeatUntil: e.target.value })}
-            placeholder="6"
-            min="1"
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
-      </div>
-    )}
-
     {/* Anchor Visit */}
     <div>
       <label className="block text-xs font-medium text-gray-700 mb-1">Anchor Visit</label>
@@ -364,9 +311,9 @@ const FormSettingsSection = ({ visitData, expandedSections, toggleSection, updat
                   <label className="block text-xs font-medium text-gray-700 mb-1">Duration (days)</label>
                   <input
                     type="number"
-                    value={settings.duration || 7}
+                    value={settings.duration || 1}
                     onChange={(e) => updateFormSetting(formId, 'duration', parseInt(e.target.value))}
-                    placeholder="7"
+                    placeholder="1"
                     className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-orange-500"
                   />
                   <p className="text-xs text-gray-500 mt-0.5">Fill window</p>

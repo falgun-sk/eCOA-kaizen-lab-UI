@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { dialog } from '../../../shared/hooks/useDialog'
 
 const Library = () => {
   const navigate = useNavigate()
@@ -986,7 +988,7 @@ const Library = () => {
 
   const confirmUseTemplate = () => {
     if (!selectedStudy) {
-      alert('Please select a study')
+      toast.error('Please select a study')
       return
     }
 
@@ -1012,7 +1014,7 @@ const Library = () => {
     allForms.push(formData)
     localStorage.setItem(`study-${selectedStudy}-forms`, JSON.stringify(allForms))
 
-    alert(`Template "${selectedTemplate.name}" added to ${studies.find(s => s.id === parseInt(selectedStudy))?.name}!`)
+    toast.success(`Template "${selectedTemplate.name}" added to ${studies.find(s => s.id === parseInt(selectedStudy))?.name}!`)
     setShowUseTemplate(false)
     setSelectedStudy('')
   }
@@ -1031,19 +1033,28 @@ const Library = () => {
     }
     setTemplates([...templates, newTemplate])
     setShowCreateTemplate(false)
-    alert('Template created successfully!')
+    toast.success('Template created successfully!')
   }
 
-  const handleArchiveTemplate = (templateId) => {
+  const handleArchiveTemplate = async (templateId) => {
     const template = templates.find(t => t.id === templateId)
     const isArchived = template?.archived || false
     const action = isArchived ? 'unarchive' : 'archive'
 
-    if (window.confirm(`Are you sure you want to ${action} this template?`)) {
+    const confirmed = await dialog.confirm({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} Template`,
+      message: `Are you sure you want to ${action} this template?`,
+      confirmText: `${action.charAt(0).toUpperCase() + action.slice(1)} Template`,
+      cancelText: 'Cancel',
+      variant: 'warning',
+      icon: 'question'
+    })
+
+    if (confirmed) {
       setTemplates(templates.map(t =>
         t.id === templateId ? { ...t, archived: !isArchived } : t
       ))
-      alert(`Template ${isArchived ? 'unarchived' : 'archived'} successfully`)
+      toast.success(`Template ${isArchived ? 'unarchived' : 'archived'} successfully`)
     }
   }
 
@@ -1407,7 +1418,7 @@ const CreateTemplateModal = ({ onSave, onClose }) => {
 
   const handleSubmit = () => {
     if (!templateData.name || !templateData.description) {
-      alert('Please fill in all required fields')
+      toast.error('Please fill in all required fields')
       return
     }
 

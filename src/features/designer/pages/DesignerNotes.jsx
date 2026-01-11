@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { dialog } from '../../../shared/hooks/useDialog'
 
 const DesignerNotes = () => {
   const { studyId } = useParams()
@@ -66,8 +67,17 @@ const DesignerNotes = () => {
     }
   }
 
-  const deleteNote = (id) => {
-    if (window.confirm('Are you sure you want to delete this note?')) {
+  const deleteNote = async (id) => {
+    const confirmed = await dialog.confirm({
+      title: 'Delete Note',
+      message: 'Are you sure you want to delete this note? This action cannot be undone.',
+      confirmText: 'Delete Note',
+      cancelText: 'Cancel',
+      variant: 'danger',
+      icon: 'danger'
+    })
+
+    if (confirmed) {
       setNotes(notes.filter(note => note.id !== id))
     }
   }

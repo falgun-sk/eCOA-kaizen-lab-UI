@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Masonry from 'react-masonry-css'
 import { getAllRoles, ROLE_DESCRIPTIONS, ROLE_PHASES } from '../constants/roles'
 
 /**
@@ -195,8 +196,16 @@ const RolePermissionsView = () => {
         </p>
       </div>
 
-      {/* Role Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Role Cards Grid - Masonry Layout */}
+      <Masonry
+        breakpointCols={{
+          default: 2,
+          1024: 2,
+          768: 1
+        }}
+        className="flex w-auto -ml-4"
+        columnClassName="pl-4 bg-clip-padding"
+      >
         {roles.map((role) => {
           const permissions = rolePermissions[role.value]
           const isExpanded = openRoles.includes(role.value)
@@ -205,7 +214,7 @@ const RolePermissionsView = () => {
           return (
             <div
               key={role.value}
-              className={`bg-white rounded-xl border-2 transition-all duration-200 ${
+              className={`bg-white rounded-xl border-2 transition-all duration-200 mb-4 ${
                 isExpanded
                   ? 'border-orange-500 shadow-lg'
                   : 'border-gray-200 hover:border-orange-300 hover:shadow-md'
@@ -314,7 +323,7 @@ const RolePermissionsView = () => {
             </div>
           )
         })}
-      </div>
+      </Masonry>
 
       {/* Info Note */}
       <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
