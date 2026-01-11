@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { validateField } from './utils'
+import Modal from '../../../../shared/components/Modal'
 
 const FormPreviewModal = ({
   isOpen,
@@ -121,123 +122,109 @@ const FormPreviewModal = ({
     return true
   }
 
+  const footer = components.length > 0 ? (
+    <div className="flex items-center justify-between">
+      <button
+        onClick={handlePrevious}
+        disabled={currentIndex === 0}
+        className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Previous
+      </button>
+
+      <div className="text-sm text-gray-600">
+        {currentIndex + 1} / {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
+      </div>
+
+      <button
+        onClick={handleNext}
+        disabled={currentIndex >= components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length - 1}
+        className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+        <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  ) : null
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-orange-500 to-orange-600">
-          <div>
-            <h2 className="text-xl font-semibold text-white">Form Preview</h2>
-            <p className="text-sm text-orange-100 mt-0.5">Test validation and logic rules</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-white hover:text-gray-200 transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-8 max-h-[calc(90vh-200px)] overflow-y-auto">
-          <div className="max-w-2xl mx-auto">
-            {/* Progress Indicator */}
-            {components.length > 0 && (
-              <div className="mb-6 flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">{formName}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Question {currentIndex + 1} of {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-sm text-gray-500">
-                    {Math.round(((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100)}% Complete
-                  </div>
-                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-300"
-                      style={{ width: `${((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <form className="min-h-[300px]">
-              {components.map((component, index) => {
-                const isVisible = shouldShowFieldWithBranching(component, index)
-                if (!isVisible) return null
-
-                // Get the visible index
-                const visibleComponents = components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx))
-                const visibleIndex = visibleComponents.findIndex(c => c.id === component.id)
-
-                // Only show the current component
-                if (visibleIndex !== currentIndex) return null
-
-                const errors = previewErrors[component.id] || []
-                const hasError = errors.length > 0
-                const triggeredBranchRule = evaluateBranchingRules(component.id)
-
-                return (
-                  <PreviewField
-                    key={component.id}
-                    component={component}
-                    index={index}
-                    value={previewValues[component.id]}
-                    errors={errors}
-                    hasError={hasError}
-                    triggeredBranchRule={triggeredBranchRule}
-                    allComponents={components}
-                    onChange={(value) => handleValueChange(component.id, value)}
-                  />
-                )
-              })}
-            </form>
-
-            {components.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500">No components added yet</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Navigation Footer */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Form Preview"
+      subtitle="Test validation and logic rules"
+      size="xl"
+      headerVariant="gradient"
+      footer={footer}
+    >
+      <div className="max-w-2xl mx-auto">
+        {/* Progress Indicator */}
         {components.length > 0 && (
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-            <button
-              onClick={handlePrevious}
-              disabled={currentIndex === 0}
-              className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Previous
-            </button>
-
-            <div className="text-sm text-gray-600">
-              {currentIndex + 1} / {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">{formName}</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Question {currentIndex + 1} of {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
+              </p>
             </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-gray-500">
+                {Math.round(((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100)}% Complete
+              </div>
+              <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-300"
+                  style={{ width: `${((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
-            <button
-              onClick={handleNext}
-              disabled={currentIndex >= components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length - 1}
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+        <form className="min-h-[300px]">
+          {components.map((component, index) => {
+            const isVisible = shouldShowFieldWithBranching(component, index)
+            if (!isVisible) return null
+
+            // Get the visible index
+            const visibleComponents = components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx))
+            const visibleIndex = visibleComponents.findIndex(c => c.id === component.id)
+
+            // Only show the current component
+            if (visibleIndex !== currentIndex) return null
+
+            const errors = previewErrors[component.id] || []
+            const hasError = errors.length > 0
+            const triggeredBranchRule = evaluateBranchingRules(component.id)
+
+            return (
+              <PreviewField
+                key={component.id}
+                component={component}
+                index={index}
+                value={previewValues[component.id]}
+                errors={errors}
+                hasError={hasError}
+                triggeredBranchRule={triggeredBranchRule}
+                allComponents={components}
+                onChange={(value) => handleValueChange(component.id, value)}
+              />
+            )
+          })}
+        </form>
+
+        {components.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No components added yet</p>
           </div>
         )}
       </div>
-    </div>
+    </Modal>
   )
 }
 
