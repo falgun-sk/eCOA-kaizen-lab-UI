@@ -18,7 +18,7 @@ import StatusBadge from './StatusBadge'
  * @param {function} onViewPermissions - Callback when view permissions button clicked
  * @param {boolean} isLoading - Loading state
  */
-const UserTable = ({ users, onEdit, onDelete, onViewPermissions, isLoading }) => {
+const UserTable = ({ users, onEdit, onDelete, onViewPermissions, isLoading, isAdmin = true }) => {
   // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) {
@@ -215,18 +215,22 @@ const UserTable = ({ users, onEdit, onDelete, onViewPermissions, isLoading }) =>
                     </svg>
                     Permissions
                   </button>
-                  <button
-                    onClick={() => onEdit(user)}
-                    className="text-orange-600 hover:text-orange-700 font-medium transition-colors px-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => onDelete(user)}
-                    className="text-red-600 hover:text-red-700 font-medium transition-colors px-2"
-                  >
-                    Delete
-                  </button>
+                  {isAdmin && onEdit && (
+                    <button
+                      onClick={() => onEdit(user)}
+                      className="text-orange-600 hover:text-orange-700 font-medium transition-colors px-2"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {isAdmin && onDelete && (
+                    <button
+                      onClick={() => onDelete(user)}
+                      className="text-red-600 hover:text-red-700 font-medium transition-colors px-2"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </td>
             </tr>

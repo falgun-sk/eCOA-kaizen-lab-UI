@@ -20,17 +20,8 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const location = useLocation()
 
-  // Auto-collapse sidebar on study detail pages and form pages for more content space
-  const shouldCollapse =
-    location.pathname.match(/\/designer\/studies\/[^/]+$/) || // Study detail page
-    location.pathname.includes('/forms/')                       // Form builder/edit pages
-
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(shouldCollapse)
-
-  // Update sidebar state when route changes
-  useEffect(() => {
-    setIsSidebarCollapsed(shouldCollapse)
-  }, [shouldCollapse])
+  // Keep sidebar collapsed by default on all pages
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed)

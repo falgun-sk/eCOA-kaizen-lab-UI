@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createNewComponent, deepClone, setNestedValue } from './utils'
+import toast from 'react-hot-toast'
 
 /**
  * Custom hook for managing form builder state
@@ -128,7 +129,7 @@ export const useFormBuilder = (studyId, formId) => {
 
     localStorage.setItem(`study-${studyId}-forms`, JSON.stringify(allForms))
 
-    alert(`Form "${formName}" saved successfully!\n\nComponents: ${canvasComponents.length}\nVersion: ${formData.version}`)
+    toast.success(`Form "${formName}" saved successfully! (${canvasComponents.length} components, Version: ${formData.version})`)
 
     setTimeout(() => {
       navigate(`/designer/studies/${studyId}`)

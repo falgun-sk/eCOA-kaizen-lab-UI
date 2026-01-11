@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
+import toast from 'react-hot-toast'
+import { dialog } from '../../../../shared/hooks/useDialog'
 
 const DEFAULT_VISIT_DATA = {
   name: '',
@@ -7,10 +9,6 @@ const DEFAULT_VISIT_DATA = {
   windowLate: '',
   type: 'site',
   isUnscheduled: false,
-  repeats: false,
-  repeatEvery: '',
-  repeatUnit: 'days',
-  repeatUntil: '',
   anchorVisit: 'this',
   offsetValue: '',
   offsetUnit: 'days',
@@ -23,8 +21,7 @@ const DEFAULT_EXPANDED_SECTIONS = {
   details: true,
   forms: true,
   formSettings: false,
-  properties: false,
-  cycles: false
+  properties: false
 }
 
 /**
@@ -38,6 +35,9 @@ export const useVisitSchedule = (studyId) => {
   const [isEditing, setIsEditing] = useState(false)
   const [expandedSections, setExpandedSections] = useState(DEFAULT_EXPANDED_SECTIONS)
   const [visitData, setVisitData] = useState(DEFAULT_VISIT_DATA)
+  const [isFinalized, setIsFinalized] = useState(false)
+  const [finalizedSnapshot, setFinalizedSnapshot] = useState(null)
+  const [pendingChanges, setPendingChanges] = useState([])
 
   // Load forms and visits from localStorage
   useEffect(() => {
@@ -50,6 +50,18 @@ export const useVisitSchedule = (studyId) => {
       const savedVisits = localStorage.getItem(`study-${studyId}-visits`)
       if (savedVisits) {
         setVisits(JSON.parse(savedVisits))
+      }
+
+      const savedFinalized = localStorage.getItem(`study-${studyId}-finalized`)
+      if (savedFinalized) {
+        const finalizedData = JSON.parse(savedFinalized)
+        setIsFinalized(finalizedData.isFinalized)
+        setFinalizedSnapshot(finalizedData.snapshot)
+      }
+
+      const savedChanges = localStorage.getItem(`study-${studyId}-pending-changes`)
+      if (savedChanges) {
+        setPendingChanges(JSON.parse(savedChanges))
       }
     }
   }, [studyId])
@@ -96,26 +108,30 @@ export const useVisitSchedule = (studyId) => {
     })
   }
 
-  const saveVisit = useCallback(() => {
-    if (!visitData.name) {
-      alert('Please fill in required field: Visit Name')
+  const saveVisit = useCallback((wizardData) => {
+    // Support both old panel data and new wizard data
+    const data = wizardData || visitData
+
+    if (!data.name) {
+      toast.error('Please fill in required field: Visit Name')
       return
     }
 
-    if (!visitData.isUnscheduled && !visitData.day) {
-      alert('Please fill in Study Day for scheduled visits')
+    if (!data.isUnscheduled && !data.day) {
+      toast.error('Please fill in Study Day for scheduled visits')
       return
     }
+
+    // Handle both wizard format (locationType, window) and old format (type, windowEarly/windowLate)
+    const window = parseInt(data.window) || parseInt(data.windowEarly) || 0
 
     const visitToSave = {
-      ...visitData,
-      day: visitData.isUnscheduled ? null : parseInt(visitData.day),
-      windowEarly: visitData.isUnscheduled ? 0 : (parseInt(visitData.windowEarly) || 0),
-      windowLate: visitData.isUnscheduled ? 0 : (parseInt(visitData.windowLate) || 0),
-      repeats: visitData.isUnscheduled ? false : visitData.repeats,
-      repeatEvery: (visitData.repeats && !visitData.isUnscheduled) ? parseInt(visitData.repeatEvery) : null,
-      repeatUntil: (visitData.repeats && !visitData.isUnscheduled) ? parseInt(visitData.repeatUntil) : null,
-      offsetValue: (visitData.anchorVisit !== 'this' && !visitData.isUnscheduled) ? parseInt(visitData.offsetValue) : null
+      ...data,
+      type: data.locationType || data.type || 'site',
+      day: data.isUnscheduled ? null : parseInt(data.day),
+      windowEarly: 0, // No negative tolerance
+      windowLate: data.isUnscheduled ? 0 : (parseInt(data.windowLate) || window),
+      offsetValue: (data.anchorVisit !== 'this' && !data.isUnscheduled) ? parseInt(data.offsetValue) : null
     }
 
     if (isEditing && selectedVisit) {
@@ -130,12 +146,22 @@ export const useVisitSchedule = (studyId) => {
     closePanel()
   }, [visitData, isEditing, selectedVisit, closePanel])
 
-  const deleteVisit = useCallback((id) => {
-    if (window.confirm('Are you sure you want to delete this visit?')) {
+  const deleteVisit = useCallback(async (id) => {
+    const confirmed = await dialog.confirm({
+      title: 'Delete Visit',
+      message: 'Are you sure you want to delete this visit? This action cannot be undone.',
+      confirmText: 'Delete Visit',
+      cancelText: 'Cancel',
+      variant: 'danger',
+      icon: 'danger'
+    })
+
+    if (confirmed) {
       setVisits(prev => prev.filter(v => v.id !== id))
       if (selectedVisit && selectedVisit.id === id) {
         closePanel()
       }
+      toast.success('Visit deleted successfully')
     }
   }, [selectedVisit, closePanel])
 
@@ -149,7 +175,7 @@ export const useVisitSchedule = (studyId) => {
         ? { ...prev.formSettings, [formId]: undefined }
         : {
             ...prev.formSettings,
-            [formId]: { startDay: 0, duration: 7, required: true }
+            [formId]: { startDay: 0, duration: 1, required: true }
           }
     }))
   }, [])
@@ -172,17 +198,141 @@ export const useVisitSchedule = (studyId) => {
     return form ? form.name : 'Unknown Form'
   }, [availableForms])
 
-  const generateCycles = useCallback((visit) => {
-    if (!visit.repeats || !visit.repeatUntil) return []
-    const cycles = []
-    for (let i = 1; i <= visit.repeatUntil; i++) {
-      cycles.push({
-        cycle: i,
-        day: visit.day + (visit.repeatEvery * (i - 1))
-      })
-    }
-    return cycles
+  const updateVisitDay = useCallback((visitId, newDay) => {
+    setVisits(prev => sortVisits(
+      prev.map(v => v.id === visitId ? { ...v, day: newDay } : v)
+    ))
+    toast.success('Visit repositioned successfully')
   }, [])
+
+  const finalizeVisit = useCallback((visitId) => {
+    setVisits(prev => prev.map(v =>
+      v.id === visitId ? { ...v, finalized: true, finalizedAt: new Date().toISOString() } : v
+    ))
+    toast.success('Visit finalized successfully')
+  }, [])
+
+  const unfinalizeVisit = useCallback((visitId) => {
+    setVisits(prev => prev.map(v =>
+      v.id === visitId ? { ...v, finalized: false, finalizedAt: null } : v
+    ))
+    toast.success('Visit unfinalized - you can now edit it')
+  }, [])
+
+  const finalizeSchedule = useCallback(() => {
+    const snapshot = {
+      visits: JSON.parse(JSON.stringify(visits)),
+      timestamp: new Date().toISOString()
+    }
+    setIsFinalized(true)
+    setFinalizedSnapshot(snapshot)
+    setPendingChanges([])
+
+    if (studyId) {
+      localStorage.setItem(`study-${studyId}-finalized`, JSON.stringify({
+        isFinalized: true,
+        snapshot
+      }))
+      localStorage.removeItem(`study-${studyId}-pending-changes`)
+    }
+
+    toast.success('Visit schedule finalized successfully')
+  }, [visits, studyId])
+
+  const detectChanges = useCallback(() => {
+    if (!isFinalized || !finalizedSnapshot) return []
+
+    const changes = []
+    const snapshotVisits = finalizedSnapshot.visits
+
+    // Check for added visits
+    visits.forEach(visit => {
+      const existedBefore = snapshotVisits.find(v => v.id === visit.id)
+      if (!existedBefore) {
+        changes.push({
+          type: 'added',
+          visitName: visit.name,
+          description: `Visit "${visit.name}" was added after finalization`
+        })
+      }
+    })
+
+    // Check for removed visits
+    snapshotVisits.forEach(snapshotVisit => {
+      const existsNow = visits.find(v => v.id === snapshotVisit.id)
+      if (!existsNow) {
+        changes.push({
+          type: 'removed',
+          visitName: snapshotVisit.name,
+          description: `Visit "${snapshotVisit.name}" was removed after finalization`
+        })
+      }
+    })
+
+    // Check for modified visits
+    visits.forEach(visit => {
+      const snapshotVisit = snapshotVisits.find(v => v.id === visit.id)
+      if (snapshotVisit) {
+        // Compare key properties
+        if (visit.name !== snapshotVisit.name ||
+            visit.day !== snapshotVisit.day ||
+            JSON.stringify(visit.forms) !== JSON.stringify(snapshotVisit.forms)) {
+          changes.push({
+            type: 'modified',
+            visitName: visit.name,
+            description: `Visit "${visit.name}" was modified after finalization`
+          })
+        }
+      }
+    })
+
+    return changes
+  }, [visits, isFinalized, finalizedSnapshot])
+
+  const approveChanges = useCallback(() => {
+    // Update the snapshot to current state
+    const newSnapshot = {
+      visits: JSON.parse(JSON.stringify(visits)),
+      timestamp: new Date().toISOString()
+    }
+    setFinalizedSnapshot(newSnapshot)
+    setPendingChanges([])
+
+    if (studyId) {
+      localStorage.setItem(`study-${studyId}-finalized`, JSON.stringify({
+        isFinalized: true,
+        snapshot: newSnapshot
+      }))
+      localStorage.removeItem(`study-${studyId}-pending-changes`)
+    }
+
+    toast.success('Changes approved and finalized')
+  }, [visits, studyId])
+
+  const unfinalizeSchedule = useCallback(() => {
+    setIsFinalized(false)
+    setFinalizedSnapshot(null)
+    setPendingChanges([])
+
+    if (studyId) {
+      localStorage.removeItem(`study-${studyId}-finalized`)
+      localStorage.removeItem(`study-${studyId}-pending-changes`)
+    }
+
+    toast.success('Visit schedule unfinalized')
+  }, [studyId])
+
+  // Detect changes whenever visits change and schedule is finalized
+  useEffect(() => {
+    if (isFinalized && finalizedSnapshot) {
+      const changes = detectChanges()
+      setPendingChanges(changes)
+
+      if (studyId && changes.length > 0) {
+        localStorage.setItem(`study-${studyId}-pending-changes`, JSON.stringify(changes))
+      }
+    }
+  }, [visits, isFinalized, finalizedSnapshot, detectChanges, studyId])
 
   return {
     // State
@@ -193,6 +343,9 @@ export const useVisitSchedule = (studyId) => {
     isEditing,
     expandedSections,
     visitData,
+    isFinalized,
+    finalizedSnapshot,
+    pendingChanges,
 
     // Setters
     setVisitData,
@@ -207,6 +360,12 @@ export const useVisitSchedule = (studyId) => {
     toggleFormAssignment,
     updateFormSetting,
     getFormName,
-    generateCycles
+    updateVisitDay,
+    finalizeVisit,
+    unfinalizeVisit,
+    finalizeSchedule,
+    unfinalizeSchedule,
+    approveChanges,
+    detectChanges
   }
 }

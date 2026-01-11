@@ -18,7 +18,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     label: 'Home',
     path: '/dashboard',
     icon: 'dashboard',
-    roles: ['admin', 'project_manager', 'build_reviewer', 'uat_member', 'site_manager', 'data_manager']
+    roles: ['project_manager', 'build_reviewer', 'uat_member', 'site_manager', 'data_manager']
   },
   {
     id: 'studies',
@@ -104,13 +104,6 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     path: '/reports',
     icon: 'reports',
     roles: ['admin', 'data_manager']
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    path: '/settings',
-    icon: 'settings',
-    roles: ['admin', 'project_manager', 'build_reviewer', 'uat_member', 'site_manager', 'data_manager', 'study_designer']
   }
 ]
 

@@ -23,7 +23,15 @@
       "Bash(node -e:*)",
       "Bash(npm install:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(start visit-wizard-mockup.html)",
+      "Bash(where:*)",
+      "Bash(node convert-to-pdf.js:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run build:*)",
+      "Bash(timeout:*)",
+      "Bash(taskkill:*)",
+      "Bash(start \"\" \"https://github.com/falgun-sk/eCOA-kaizen-lab-UI/compare/develop...designer\")"
     ]
   }
 }

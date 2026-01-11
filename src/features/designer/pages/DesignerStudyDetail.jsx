@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import useAuth from '../../../shared/hooks/useAuth'
-import ReviewPanel from '../components/ReviewPanel'
+import toast from 'react-hot-toast'
+import { dialog } from '../../../shared/hooks/useDialog'
 
 const DesignerStudyDetail = () => {
   const { studyId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+
+  // Track submission state
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Load study data from localStorage
   const [study, setStudy] = useState(null)
@@ -77,6 +81,9 @@ const DesignerStudyDetail = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const [previewForm, setPreviewForm] = useState(null)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [formValues, setFormValues] = useState({})
+  const [isCompleted, setIsCompleted] = useState(false)
 
   // Library templates
   const templates = [
@@ -250,7 +257,40 @@ const DesignerStudyDetail = () => {
   // Handle form preview
   const handlePreviewForm = (form) => {
     setPreviewForm(form)
+    setCurrentQuestionIndex(0)
+    setFormValues({})
+    setIsCompleted(false)
     setShowPreviewModal(true)
+  }
+
+  const handleInputChange = (componentId, value) => {
+    setFormValues(prev => ({
+      ...prev,
+      [componentId]: value
+    }))
+  }
+
+  // Navigation handlers for preview
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1)
+    }
+  }
+
+  const handleNextQuestion = () => {
+    if (previewForm && currentQuestionIndex < previewForm.components.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1)
+    } else if (currentQuestionIndex === previewForm.components.length - 1) {
+      // Form completed - show completion screen
+      setIsCompleted(true)
+    }
+  }
+
+  const handleClosePreview = () => {
+    setShowPreviewModal(false)
+    setCurrentQuestionIndex(0)
+    setFormValues({})
+    setIsCompleted(false)
   }
 
   // Study status workflow
@@ -275,14 +315,24 @@ const DesignerStudyDetail = () => {
     return workflow[currentStatus] !== undefined ? workflow[currentStatus] : workflow['Design']
   }
 
-  const handleStatusChange = (newStatus) => {
+  const handleStatusChange = async (newStatus) => {
     // Validate that at least one form exists before submitting for review
     if (newStatus === 'Review' && forms.length === 0) {
-      alert('You must add at least one form or template before submitting this study for review.')
+      toast.error('You must add at least one form or template before submitting this study for review.')
       return
     }
 
-    if (window.confirm(`Are you sure you want to change study status to "${newStatus}"?`)) {
+    const confirmed = await dialog.confirm({
+      title: 'Change Study Status',
+      message: `Are you sure you want to change study status to "${newStatus}"?`,
+      confirmText: 'Change Status',
+      cancelText: 'Cancel',
+      variant: 'primary',
+      icon: 'question'
+    })
+
+    if (confirmed) {
+      setIsSubmitting(true)
       try {
         const savedStudies = localStorage.getItem('studies')
         if (savedStudies) {
@@ -296,10 +346,12 @@ const DesignerStudyDetail = () => {
 
           // Update local study state
           setStudy({ ...study, status: newStatus })
+          toast.success(`Study status changed to "${newStatus}"`)
         }
       } catch (error) {
         console.error('Error updating study status:', error)
-        alert('Failed to update study status')
+        toast.error('Failed to update study status')
+        setIsSubmitting(false)
       }
     }
   }
@@ -339,7 +391,7 @@ const DesignerStudyDetail = () => {
         </svg>
       ),
       color: 'from-green-500 to-green-600',
-      action: () => setShowFormSelection(true)
+      action: () => navigate(`/designer/studies/${studyId}/edit-forms`)
     },
     {
       id: 'visit-schedule',
@@ -431,33 +483,6 @@ const DesignerStudyDetail = () => {
                 <span>Last modified {study.lastModified}</span>
               </div>
             </div>
-
-            {/* Status Workflow Controls */}
-            <div className="flex items-center gap-2">
-              {getNextStatus(study.status) && forms.length > 0 && (
-                <button
-                  onClick={() => handleStatusChange(getNextStatus(study.status))}
-                  className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-200 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-green-500/30"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Submit for {getNextStatus(study.status)}
-                </button>
-              )}
-              {study.status !== 'Design' && (user?.role === 'project_manager' || user?.role === 'admin') && (
-                <button
-                  onClick={() => handleStatusChange('Design')}
-                  className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-colors"
-                  title="Revert to Design"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                  </svg>
-                  Revert to Design
-                </button>
-              )}
-            </div>
           </div>
         </div>
       </div>
@@ -486,106 +511,7 @@ const DesignerStudyDetail = () => {
           ))}
         </div>
 
-        {/* Forms List Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Study Forms</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {forms.length === 0 ? 'No forms added yet' : `${forms.length} form${forms.length !== 1 ? 's' : ''} in this study`}
-              </p>
-            </div>
-          </div>
 
-          {forms.length > 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Form Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Version
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Components
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Modified
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {forms.map((form) => (
-                    <tr key={form.id} className="hover:bg-orange-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
-                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{form.name}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          {form.version}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {form.components?.length || 0} component{form.components?.length !== 1 ? 's' : ''}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{form.lastModified}</div>
-                        <div className="text-xs text-gray-400">by {form.modifiedBy}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
-                        <button
-                          onClick={() => handlePreviewForm(form)}
-                          className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
-                        >
-                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                          Preview
-                        </button>
-                        <button
-                          onClick={() => navigate(`/designer/studies/${studyId}/forms/${form.id}`)}
-                          className="inline-flex items-center px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-medium rounded-lg transition-colors"
-                        >
-                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 mb-4">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No forms added yet</h3>
-              <p className="text-sm text-gray-500">Use the action buttons above to create a new form or select a template</p>
-            </div>
-          )}
-        </div>
 
         {/* Info Message when no forms exist */}
         {forms.length === 0 && study.status === 'Design' && (
@@ -599,25 +525,19 @@ const DesignerStudyDetail = () => {
             </div>
           </div>
         )}
-
-        {/* Review Panel - Show when study is in Review, UAT, or Approved status */}
-        {(study.status === 'Review' || study.status === 'UAT' || study.status === 'Approved') && (
-          <div className="mb-8">
-            <ReviewPanel
-              studyId={studyId}
-              study={study}
-              onStatusChange={handleStatusChange}
-            />
-          </div>
-        )}
       </div>
 
-      {/* Form Selection Modal */}
+      {/* Edit Existing Form Modal */}
       {showFormSelection && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full">
+          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] flex flex-col">
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Select Form to Edit</h2>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Edit Existing Form</h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  {forms.length === 0 ? 'No forms added yet' : `${forms.length} form${forms.length !== 1 ? 's' : ''} in this study`}
+                </p>
+              </div>
               <button
                 onClick={() => setShowFormSelection(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -628,34 +548,126 @@ const DesignerStudyDetail = () => {
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-6 overflow-auto flex-1">
               {forms.length > 0 ? (
-                <div className="space-y-3">
-                  {forms.map((form) => (
-                    <div
-                      key={form.id}
-                      onClick={() => {
-                        setShowFormSelection(false)
-                        navigate(`/designer/studies/${studyId}/forms/${form.id}`)
-                      }}
-                      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 cursor-pointer transition-all"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
-                          <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div>
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Form Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Version
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Components
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Last Modified
+                          </th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {forms.map((form) => (
+                          <tr key={form.id} className="hover:bg-orange-50 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </div>
+                                <div className="ml-4">
+                                  <div className="text-sm font-medium text-gray-900">{form.name}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                {form.version}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {form.components?.length || 0} component{form.components?.length !== 1 ? 's' : ''}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">{form.lastModified}</div>
+                              <div className="text-xs text-gray-400">by {form.modifiedBy}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                              <button
+                                onClick={() => {
+                                  setShowFormSelection(false)
+                                  handlePreviewForm(form)
+                                }}
+                                className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium rounded-lg transition-colors"
+                              >
+                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                Preview
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setShowFormSelection(false)
+                                  navigate(`/designer/studies/${studyId}/forms/${form.id}`)
+                                }}
+                                className="inline-flex items-center px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-medium rounded-lg transition-colors"
+                              >
+                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Status Workflow Actions */}
+                  {getNextStatus(study.status) && (
+                    <div className="mt-6 flex items-center justify-end gap-3">
+                      {study.status !== 'Design' && (user?.role === 'project_manager' || user?.role === 'admin') && (
+                        <button
+                          onClick={() => {
+                            setShowFormSelection(false)
+                            handleStatusChange('Design')
+                          }}
+                          disabled={isSubmitting}
+                          className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Revert to Design"
+                        >
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                           </svg>
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-semibold text-gray-900">{form.name}</h3>
-                          <p className="text-xs text-gray-500">Version {form.version} • Modified {form.lastModified}</p>
-                        </div>
-                      </div>
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                          Revert to Design
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setShowFormSelection(false)
+                          handleStatusChange(getNextStatus(study.status))
+                        }}
+                        disabled={isSubmitting}
+                        className="inline-flex items-center px-6 py-2.5 text-sm font-semibold rounded-lg shadow-md transition-all duration-200 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {isSubmitting ? 'Submitting...' : `Submit for ${getNextStatus(study.status)}`}
+                      </button>
                     </div>
-                  ))}
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-12">
@@ -664,7 +676,7 @@ const DesignerStudyDetail = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">No Forms Yet</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No forms added yet</h3>
                   <p className="text-sm text-gray-500 mb-4">Create your first form to get started</p>
                   <button
                     onClick={() => {
@@ -687,7 +699,7 @@ const DesignerStudyDetail = () => {
                 onClick={() => setShowFormSelection(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Cancel
+                Close
               </button>
             </div>
           </div>
@@ -783,47 +795,137 @@ const DesignerStudyDetail = () => {
 
       {/* Form Preview Modal */}
       {showPreviewModal && previewForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-blue-500 to-blue-600">
-              <div>
-                <h2 className="text-xl font-semibold text-white">Form Preview - Patient View</h2>
-                <p className="text-sm text-blue-100 mt-0.5">{previewForm.name} • {previewForm.version}</p>
-              </div>
-              <button
-                onClick={() => setShowPreviewModal(false)}
-                className="text-white hover:text-gray-200 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          {/* Close Button */}
+          <button
+            onClick={() => setShowPreviewModal(false)}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
 
-            <div className="p-8 max-h-[calc(90vh-140px)] overflow-y-auto bg-gray-50">
-              <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">{previewForm.name}</h3>
+          <div className="flex items-center justify-center">
+              {/* Mobile Device Frame */}
+              <div className="w-full max-w-md">
+                {/* Phone Frame */}
+                <div className="bg-white rounded-[3rem] shadow-2xl border-[14px] border-gray-900 overflow-hidden">
+                  {/* Phone Notch */}
+                  <div className="bg-gray-900 h-6 flex items-center justify-center">
+                    <div className="w-32 h-4 bg-black rounded-b-2xl"></div>
+                  </div>
 
-                {previewForm.components && previewForm.components.length > 0 ? (
-                  <div className="space-y-6">
-                    {previewForm.components.map((component, index) => (
-                      <div key={component.id} className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <label className="block text-sm font-medium text-gray-900 mb-2">
-                          {index + 1}. {component.label}
-                          {component.config?.required && <span className="text-red-500 ml-1">*</span>}
-                        </label>
+                  {/* Phone Screen Content */}
+                  <div className="bg-gradient-to-b from-white to-gray-50 h-[500px] flex flex-col">
+                    {/* App Header */}
+                    <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 text-white">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                            <span className="text-orange-600 font-bold text-sm">eC</span>
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-semibold">{previewForm.name}</h3>
+                            <p className="text-xs text-orange-100">Clinical Study</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-                        {component.config?.helpText && (
-                          <p className="text-xs text-gray-600 mb-3">{component.config.helpText}</p>
-                        )}
+                    {isCompleted ? (
+                      /* Completion Screen */
+                      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
+                        <div className="text-center">
+                          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
+                            <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <h2 className="text-2xl font-bold text-gray-900 mb-3">Form Completed!</h2>
+                          <p className="text-gray-600 mb-2">Thank you for completing this form.</p>
+                          <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">Form:</span>
+                                <span className="font-medium text-gray-900">{previewForm.name}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">Questions:</span>
+                                <span className="font-medium text-gray-900">{previewForm.components?.length || 0}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-500">Time:</span>
+                                <span className="font-medium text-gray-900">{new Date().toLocaleTimeString()}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={handleClosePreview}
+                            className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all duration-200 active:scale-95"
+                          >
+                            Close Preview
+                          </button>
+                        </div>
+                      </div>
+                    ) : previewForm.components && previewForm.components.length > 0 ? (
+                      <>
+                        {/* Progress Bar */}
+                        <div className="px-5 pt-4 pb-3 bg-white">
+                          <div className="flex items-center justify-between mb-3 text-xs font-medium text-gray-600">
+                            <span className="flex items-center space-x-1">
+                              <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span>Question {currentQuestionIndex + 1}/{previewForm.components.length}</span>
+                            </span>
+                            <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">
+                              {Math.round(((currentQuestionIndex + 1) / previewForm.components.length) * 100)}% Complete
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 shadow-inner">
+                            <div
+                              className="bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 h-2.5 rounded-full transition-all duration-500 shadow-sm"
+                              style={{ width: `${((currentQuestionIndex + 1) / previewForm.components.length) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        {/* Question Content */}
+                        <div className="h-[300px] px-6 py-6 overflow-y-auto">
+                          {(() => {
+                            const component = previewForm.components[currentQuestionIndex];
+                            return (
+                              <div>
+                                <div className="mb-6">
+                                  <div className="flex items-start space-x-2 mb-3">
+                                    {component.config?.required && (
+                                      <span className="flex-shrink-0 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-xs font-bold">
+                                        *
+                                      </span>
+                                    )}
+                                    <h2 className="text-xl font-bold text-gray-900 leading-tight">
+                                      {component.label}
+                                    </h2>
+                                  </div>
+                                  {component.config?.helpText && (
+                                    <div className="flex items-start space-x-2 bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r-lg">
+                                      <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <p className="text-sm text-blue-800">{component.config.helpText}</p>
+                                    </div>
+                                  )}
+                                </div>
 
                         {/* Text Input */}
                         {component.type === 'text' && (
                           <input
                             type="text"
+                            value={formValues[component.id] || ''}
+                            onChange={(e) => handleInputChange(component.id, e.target.value)}
                             placeholder={component.config?.placeholder || 'Enter text...'}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            disabled
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                           />
                         )}
 
@@ -831,19 +933,21 @@ const DesignerStudyDetail = () => {
                         {component.type === 'number' && (
                           <input
                             type="number"
+                            value={formValues[component.id] || ''}
+                            onChange={(e) => handleInputChange(component.id, e.target.value)}
                             placeholder={component.config?.placeholder || 'Enter number...'}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            disabled
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                           />
                         )}
 
                         {/* Textarea */}
                         {component.type === 'textarea' && (
                           <textarea
+                            value={formValues[component.id] || ''}
+                            onChange={(e) => handleInputChange(component.id, e.target.value)}
                             placeholder={component.config?.placeholder || 'Enter text...'}
                             rows={4}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            disabled
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                           />
                         )}
 
@@ -852,10 +956,11 @@ const DesignerStudyDetail = () => {
                           <div className="flex items-center">
                             <input
                               type="checkbox"
-                              className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-                              disabled
+                              checked={formValues[component.id] || false}
+                              onChange={(e) => handleInputChange(component.id, e.target.checked)}
+                              className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                             />
-                            <span className="ml-2 text-sm text-gray-600">Check this option</span>
+                            <span className="ml-2 text-sm text-gray-700">Check this option</span>
                           </div>
                         )}
 
@@ -868,8 +973,9 @@ const DesignerStudyDetail = () => {
                                   type="radio"
                                   name={`radio-${component.id}`}
                                   value={option}
-                                  className="w-4 h-4 text-blue-500 border-gray-300 focus:ring-blue-500"
-                                  disabled
+                                  checked={formValues[component.id] === option}
+                                  onChange={(e) => handleInputChange(component.id, e.target.value)}
+                                  className="w-4 h-4 text-orange-500 border-gray-300 focus:ring-orange-500"
                                 />
                                 <span className="ml-2 text-sm text-gray-700">{option}</span>
                               </div>
@@ -880,8 +986,9 @@ const DesignerStudyDetail = () => {
                         {/* Dropdown */}
                         {component.type === 'dropdown' && (
                           <select
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                            disabled
+                            value={formValues[component.id] || ''}
+                            onChange={(e) => handleInputChange(component.id, e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
                           >
                             <option value="">Select an option...</option>
                             {(component.config?.options || ['Option 1', 'Option 2', 'Option 3']).map((option, i) => (
@@ -894,8 +1001,9 @@ const DesignerStudyDetail = () => {
                         {component.type === 'date' && (
                           <input
                             type="date"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            disabled
+                            value={formValues[component.id] || ''}
+                            onChange={(e) => handleInputChange(component.id, e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                           />
                         )}
 
@@ -909,7 +1017,8 @@ const DesignerStudyDetail = () => {
                                 type="range"
                                 min="0"
                                 max="10"
-                                defaultValue="5"
+                                value={formValues[component.id] !== undefined ? formValues[component.id] : 5}
+                                onChange={(e) => handleInputChange(component.id, e.target.value)}
                                 orient="vertical"
                                 className="h-32 cursor-pointer"
                                 style={{
@@ -917,14 +1026,13 @@ const DesignerStudyDetail = () => {
                                   WebkitAppearance: 'slider-vertical',
                                   width: '8px'
                                 }}
-                                disabled
                               />
                               <div className="text-sm font-semibold text-gray-900 mt-3">0</div>
                             </div>
                             {/* Current Value */}
                             <div className="flex flex-col items-center justify-center min-w-[80px] p-3 bg-orange-50 rounded-xl border border-orange-200">
                               <div className="text-xs font-medium text-gray-500 mb-1">Value</div>
-                              <div className="text-2xl font-bold text-orange-600">5</div>
+                              <div className="text-2xl font-bold text-orange-600">{formValues[component.id] !== undefined ? formValues[component.id] : 5}</div>
                             </div>
                           </div>
                         )}
@@ -970,37 +1078,88 @@ const DesignerStudyDetail = () => {
                           </div>
                         )}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 mb-4">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <p className="text-gray-500">This form has no components yet</p>
-                  </div>
-                )}
-              </div>
-            </div>
+                    );
+                  })()}
+                        </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between">
-              <button
-                onClick={() => setShowPreviewModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Close Preview
-              </button>
-              <button
-                onClick={() => {
-                  setShowPreviewModal(false)
-                  navigate(`/designer/studies/${studyId}/forms/${previewForm.id}`)
-                }}
-                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors"
-              >
-                Edit Form
-              </button>
+                        {/* Navigation Buttons */}
+                        <div className="px-6 py-4 border-t-2 border-gray-200 bg-white">
+                          <div className="flex items-center justify-between gap-3 mb-4">
+                            <button
+                              onClick={handlePreviousQuestion}
+                              disabled={currentQuestionIndex === 0}
+                              className={`flex-1 inline-flex items-center justify-center px-4 py-3 border-2 rounded-xl font-semibold transition-all duration-200 ${
+                                currentQuestionIndex === 0
+                                  ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 active:scale-95'
+                              }`}
+                            >
+                              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                              Previous
+                            </button>
+                            <button
+                              onClick={handleNextQuestion}
+                              disabled={currentQuestionIndex === previewForm.components.length - 1}
+                              className={`flex-1 inline-flex items-center justify-center px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                                currentQuestionIndex === previewForm.components.length - 1
+                                  ? 'bg-green-500 hover:bg-green-600 text-white border-2 border-green-500 hover:border-green-600'
+                                  : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-2 border-transparent'
+                              } active:scale-95`}
+                            >
+                              {currentQuestionIndex === previewForm.components.length - 1 ? (
+                                <>
+                                  Complete
+                                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                </>
+                              ) : (
+                                <>
+                                  Next
+                                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </>
+                              )}
+                            </button>
+                          </div>
+
+                          {/* Progress Dots */}
+                          <div className="flex items-center justify-center gap-2">
+                            {previewForm.components.map((_, index) => (
+                              <div
+                                key={index}
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  index === currentQuestionIndex
+                                    ? 'w-8 bg-orange-500'
+                                    : index < currentQuestionIndex
+                                    ? 'w-2 bg-green-500'
+                                    : 'w-2 bg-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 mb-4">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <p className="text-gray-500">This form has no components yet</p>
+                      </div>
+                    )}
+
+                    {/* Phone Home Indicator */}
+                    <div className="bg-gray-900 h-5 flex items-center justify-center">
+                      <div className="w-32 h-1 bg-white rounded-full opacity-50"></div>
+                    </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

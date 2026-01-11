@@ -6,6 +6,7 @@ import { ROLES } from '../../features/access/constants/roles'
 // Designer pages
 import DesignerDashboard from '../../features/designer/pages/DesignerDashboard'
 import DesignerStudyDetail from '../../features/designer/pages/DesignerStudyDetail'
+import EditFormSelection from '../../features/designer/pages/EditFormSelection'
 import FormBuilder from '../../features/designer/pages/FormBuilder'
 import LanguageManagement from '../../features/designer/pages/LanguageManagement'
 import VisitSchedule from '../../features/designer/pages/VisitSchedule'
@@ -61,6 +62,18 @@ export const designerRoutes = (
         <MainLayout>
           <ProtectedRoute allowedRoles={[ROLES.STUDY_DESIGNER]}>
             <DesignerStudyDetail />
+          </ProtectedRoute>
+        </MainLayout>
+      }
+    />
+
+    {/* Edit Form Selection */}
+    <Route
+      path="/designer/studies/:studyId/edit-forms"
+      element={
+        <MainLayout>
+          <ProtectedRoute allowedRoles={[ROLES.STUDY_DESIGNER]}>
+            <EditFormSelection />
           </ProtectedRoute>
         </MainLayout>
       }
