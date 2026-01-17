@@ -1,6 +1,8 @@
 import { useState, useEffect, ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { studiesApi } from '../../../shared/services/api'
+import useAuth from '../../../shared/hooks/useAuth'
+import { ROLES } from '../../access/constants/roles'
 
 interface Study {
   id: number
@@ -15,6 +17,7 @@ interface Study {
 
 const Dashboard = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [studies, setStudies] = useState<Study[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -240,9 +243,9 @@ const Dashboard = () => {
             {studies.map((study) => (
               <div
                 key={study.id}
-                className="bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-200 overflow-hidden"
+                className="bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col"
               >
-                <div className="p-6">
+                <div className="p-6 flex flex-col flex-1">
                   {/* Study Header */}
                   <div className="mb-4">
                     <h3 className="text-lg font-bold text-gray-900 mb-2">
@@ -319,7 +322,7 @@ const Dashboard = () => {
                   {/* Go to Study Button */}
                   <button
                     onClick={() => navigate(getStudyRoute(study.id))}
-                    className="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+                    className="w-full mt-auto py-2.5 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
                   >
                     <span>Go to Study</span>
                     <svg
