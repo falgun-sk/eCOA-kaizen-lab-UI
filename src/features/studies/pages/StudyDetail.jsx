@@ -106,38 +106,46 @@ const StudyDetail = () => {
 
           {/* Progress Indicator */}
           <div className="mt-6">
-            <div className="flex items-center justify-between max-w-3xl">
-              {progressSteps.map((step, index) => (
-                <div key={step.name} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center flex-1">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                      step.status === 'completed'
-                        ? 'bg-green-500 border-green-500 text-white'
-                        : step.status === 'current'
-                        ? 'bg-orange-500 border-orange-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-400'
-                    }`}>
-                      {step.status === 'completed' ? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      ) : (
-                        <span className="text-sm font-semibold">{index + 1}</span>
-                      )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center flex-1 max-w-3xl">
+                {progressSteps.map((step, index) => (
+                  <div key={step.name} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center flex-1">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                        step.status === 'completed'
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : step.status === 'current'
+                          ? 'bg-orange-500 border-orange-500 text-white'
+                          : 'bg-white border-gray-300 text-gray-400'
+                      }`}>
+                        {step.status === 'completed' ? (
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          <span className="text-sm font-semibold">{index + 1}</span>
+                        )}
+                      </div>
+                      <span className={`text-xs font-medium mt-2 ${
+                        step.status === 'current' ? 'text-orange-600' : 'text-gray-600'
+                      }`}>
+                        {step.name}
+                      </span>
                     </div>
-                    <span className={`text-xs font-medium mt-2 ${
-                      step.status === 'current' ? 'text-orange-600' : 'text-gray-600'
-                    }`}>
-                      {step.name}
-                    </span>
+                    {index < progressSteps.length - 1 && (
+                      <div className={`h-0.5 flex-1 mx-2 ${
+                        step.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
+                      }`}></div>
+                    )}
                   </div>
-                  {index < progressSteps.length - 1 && (
-                    <div className={`h-0.5 flex-1 mx-2 ${
-                      step.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
-                    }`}></div>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
+              <button
+                onClick={() => navigate(`/deployment/execute/${studyId}`)}
+                className="ml-8 px-8 py-2.5 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-200 font-semibold text-sm shadow-md hover:shadow-lg hover:scale-105 border border-orange-600"
+              >
+                Deploy
+              </button>
             </div>
           </div>
         </div>
