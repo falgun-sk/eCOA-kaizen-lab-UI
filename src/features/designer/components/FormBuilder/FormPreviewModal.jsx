@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { validateField } from './utils'
-import Modal from '../../../../shared/components/Modal'
 
 const FormPreviewModal = ({
   isOpen,
@@ -122,109 +121,161 @@ const FormPreviewModal = ({
     return true
   }
 
-  const footer = components.length > 0 ? (
-    <div className="flex items-center justify-between">
-      <button
-        onClick={handlePrevious}
-        disabled={currentIndex === 0}
-        className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Previous
-      </button>
-
-      <div className="text-sm text-gray-600">
-        {currentIndex + 1} / {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
-      </div>
-
-      <button
-        onClick={handleNext}
-        disabled={currentIndex >= components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length - 1}
-        className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg text-sm font-semibold hover:from-orange-600 hover:to-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Next
-        <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-    </div>
-  ) : null
+  const visibleComponents = components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx))
+  const totalQuestions = visibleComponents.length
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Form Preview"
-      subtitle="Test validation and logic rules"
-      size="xl"
-      headerVariant="gradient"
-      footer={footer}
-    >
-      <div className="max-w-2xl mx-auto">
-        {/* Progress Indicator */}
-        {components.length > 0 && (
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">{formName}</h3>
-              <p className="text-sm text-gray-500 mt-1">
-                Question {currentIndex + 1} of {components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length}
-              </p>
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
+      >
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div className="flex items-center justify-center py-4">
+        {/* Mobile Device Frame */}
+        <div className="w-full max-w-md flex-shrink-0">
+          {/* Phone Frame */}
+          <div className="bg-white rounded-[3rem] shadow-2xl border-[14px] border-gray-900 overflow-hidden flex-shrink-0">
+            {/* Phone Notch */}
+            <div className="bg-gray-900 h-6 flex-shrink-0 flex items-center justify-center">
+              <div className="w-32 h-4 bg-black rounded-b-2xl"></div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="text-sm text-gray-500">
-                {Math.round(((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100)}% Complete
+
+            {/* Phone Screen Content */}
+            <div className="bg-gradient-to-b from-white to-gray-50 h-[580px] flex-shrink-0 flex flex-col">
+              {/* App Header */}
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 text-white">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                      <span className="text-orange-600 font-bold text-sm">eC</span>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold">{formName}</h3>
+                      <p className="text-xs text-orange-100">Clinical Study</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-300"
-                  style={{ width: `${((currentIndex + 1) / components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx)).length) * 100}%` }}
-                />
+
+              {components.length > 0 ? (
+                <>
+                  {/* Progress Bar */}
+                  <div className="px-5 pt-4 pb-3 bg-white">
+                    <div className="flex items-center justify-between mb-3 text-xs font-medium text-gray-600">
+                      <span className="flex items-center space-x-1">
+                        <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Question {currentIndex + 1}/{totalQuestions}</span>
+                      </span>
+                      <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">
+                        {Math.round(((currentIndex + 1) / totalQuestions) * 100)}% Complete
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 shadow-inner">
+                      <div
+                        className="bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 h-2.5 rounded-full transition-all duration-500 shadow-sm"
+                        style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* Question Content */}
+                  <div className="flex-1 px-6 py-6 overflow-y-auto">
+                    {components.map((component, index) => {
+                      const isVisible = shouldShowFieldWithBranching(component, index)
+                      if (!isVisible) return null
+
+                      const visibleIndex = visibleComponents.findIndex(c => c.id === component.id)
+                      if (visibleIndex !== currentIndex) return null
+
+                      const errors = previewErrors[component.id] || []
+                      const hasError = errors.length > 0
+                      const triggeredBranchRule = evaluateBranchingRules(component.id)
+
+                      return (
+                        <PreviewField
+                          key={component.id}
+                          component={component}
+                          index={index}
+                          value={previewValues[component.id]}
+                          errors={errors}
+                          hasError={hasError}
+                          triggeredBranchRule={triggeredBranchRule}
+                          allComponents={components}
+                          onChange={(value) => handleValueChange(component.id, value)}
+                        />
+                      )
+                    })}
+                  </div>
+
+                  {/* Navigation Buttons */}
+                  <div className="px-6 py-4 border-t-2 border-gray-200 bg-white">
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <button
+                        onClick={handlePrevious}
+                        disabled={currentIndex === 0}
+                        className={`flex-1 inline-flex items-center justify-center px-4 py-3 border-2 rounded-xl font-semibold transition-all duration-200 ${
+                          currentIndex === 0
+                            ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 active:scale-95'
+                        }`}
+                      >
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Previous
+                      </button>
+                      <button
+                        onClick={handleNext}
+                        disabled={currentIndex >= totalQuestions - 1}
+                        className="flex-1 inline-flex items-center justify-center px-4 py-3 rounded-xl font-semibold transition-all duration-200 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-2 border-transparent active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Progress Dots */}
+                    <div className="flex items-center justify-center gap-2">
+                      {visibleComponents.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            index === currentIndex
+                              ? 'w-8 bg-orange-500'
+                              : index < currentIndex
+                              ? 'w-2 bg-green-500'
+                              : 'w-2 bg-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-gray-500">
+                  <p>No components added yet</p>
+                </div>
+              )}
+
+              {/* Phone Home Indicator */}
+              <div className="bg-gray-900 h-6 flex-shrink-0 flex items-center justify-center">
+                <div className="w-24 h-1 bg-gray-600 rounded-full"></div>
               </div>
             </div>
           </div>
-        )}
-
-        <form className="min-h-[300px]">
-          {components.map((component, index) => {
-            const isVisible = shouldShowFieldWithBranching(component, index)
-            if (!isVisible) return null
-
-            // Get the visible index
-            const visibleComponents = components.filter((comp, idx) => shouldShowFieldWithBranching(comp, idx))
-            const visibleIndex = visibleComponents.findIndex(c => c.id === component.id)
-
-            // Only show the current component
-            if (visibleIndex !== currentIndex) return null
-
-            const errors = previewErrors[component.id] || []
-            const hasError = errors.length > 0
-            const triggeredBranchRule = evaluateBranchingRules(component.id)
-
-            return (
-              <PreviewField
-                key={component.id}
-                component={component}
-                index={index}
-                value={previewValues[component.id]}
-                errors={errors}
-                hasError={hasError}
-                triggeredBranchRule={triggeredBranchRule}
-                allComponents={components}
-                onChange={(value) => handleValueChange(component.id, value)}
-              />
-            )
-          })}
-        </form>
-
-        {components.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No components added yet</p>
-          </div>
-        )}
+        </div>
       </div>
-    </Modal>
+    </div>
   )
 }
 
@@ -239,15 +290,27 @@ const PreviewField = ({
   onChange
 }) => {
   return (
-    <div className={`bg-gray-50 p-6 rounded-lg border ${hasError ? 'border-red-300' : 'border-gray-200'}`}>
-      <label className="block text-sm font-medium text-gray-900 mb-2">
-        {index + 1}. {component.label}
-        {component.config?.required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-
-      {component.config?.helpText && (
-        <p className="text-xs text-gray-600 mb-3">{component.config.helpText}</p>
-      )}
+    <div>
+      <div className="mb-6">
+        <div className="flex items-start space-x-2 mb-3">
+          {component.config?.required && (
+            <span className="flex-shrink-0 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-xs font-bold">
+              *
+            </span>
+          )}
+          <h2 className="text-xl font-bold text-gray-900 leading-tight">
+            {component.label}
+          </h2>
+        </div>
+        {component.config?.helpText && (
+          <div className="flex items-start space-x-2 bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r-lg">
+            <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-blue-800">{component.config.helpText}</p>
+          </div>
+        )}
+      </div>
 
       <FieldInput
         component={component}
@@ -258,14 +321,14 @@ const PreviewField = ({
 
       {/* Errors */}
       {hasError && (
-        <div className="mt-2 space-y-1">
+        <div className="mt-3 space-y-1">
           {errors.map((error, i) => (
-            <p key={i} className="text-xs text-red-600 flex items-center">
-              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <div key={i} className="flex items-start space-x-2 bg-red-50 border-l-4 border-red-400 p-3 rounded-r-lg">
+              <svg className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              {error}
-            </p>
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
           ))}
         </div>
       )}
