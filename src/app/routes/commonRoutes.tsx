@@ -8,6 +8,8 @@ import DashboardWrapper from '../../features/dashboard/pages/DashboardWrapper'
 import Access from '../../features/access/pages/Access'
 import Reports from '../../features/studies/pages/Reports'
 import Tasks from '../../features/dashboard/pages/Tasks'
+import DeploymentVerificationSimple from '../../features/deployment/pages/DeploymentVerificationSimple'
+import PMDeployment from '../../features/deployment/pages/PMDeployment'
 import Placeholder from '../../shared/components/Placeholder'
 
 /**
@@ -79,6 +81,27 @@ export const commonRoutes = (
         <MainLayout>
           <Placeholder title="Help & Support" description="Get help with eCOA" />
         </MainLayout>
+      }
+    />
+
+    {/* Deployment Routes */}
+    {/* PM Direct Deployment (Project Manager only) */}
+    <Route
+      path="/deployment/execute/:studyId"
+      element={
+        <ProtectedRoute allowedRoles={[ROLES.PROJECT_MANAGER]}>
+          <PMDeployment />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Legacy Simple Deployment */}
+    <Route
+      path="/deployment"
+      element={
+        <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.PROJECT_MANAGER]}>
+          <DeploymentVerificationSimple />
+        </ProtectedRoute>
       }
     />
   </>
