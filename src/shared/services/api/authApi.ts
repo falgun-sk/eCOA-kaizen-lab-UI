@@ -1,6 +1,6 @@
 /**
  * Auth API Service
- * Handles authentication-related API calls
+ * Handles authentication-related API calls to the Spring Boot backend
  */
 
 import { apiClient } from './client'
@@ -8,159 +8,191 @@ import type {
   User,
   LoginCredentials,
   LoginResponse,
-  ForgotPasswordResponse
+  ForgotPasswordResponse,
+  BackendSignInResponse,
+  BackendMeResponse,
+  BackendUserSummary,
+  RoleApproval,
 } from '../../../types'
 
-// Mock data for development (remove when backend is ready)
-const MOCK_USER: User = {
-  id: '1',
-  email: 'admin@kaizen.com',
-  name: 'John Admin',
-  firstName: 'John',
-  lastName: 'Admin',
-  roles: ['admin'],
-  role: 'admin',
+/**
+ * Maps the backend's UserSummary + tokens into the shape our frontend expects.
+ *
+ * Backend sends:  { accessToken, refreshToken, user: { userId, firstName, lastName, ... } }
+ * Frontend needs: { token, refreshToken, user: { id, name, firstName, lastName, ... } }
+ */
+const mapSignInToLoginResponse = (backend: BackendSignInResponse): LoginResponse => ({
+  token: backend.accessToken,
+  refreshToken: backend.refreshToken,
+  user: {
+    id: String(backend.user.userId),
+    email: backend.user.email,
+    name: `${backend.user.firstName} ${backend.user.lastName}`.trim(),
+    firstName: backend.user.firstName,
+    lastName: backend.user.lastName,
+    roles: backend.user.roles.map(r => r.toLowerCase()),
+    role: backend.user.roles[0]?.toLowerCase(),
+    avatar: null,
+  },
+})
+
+/**
+ * Maps the backend's MeResponse into the frontend's User type.
+ *
+ * Backend sends:  { id, username, email, firstName, lastName, roles, pages }
+ * Frontend needs: { id, name, email, firstName, lastName, roles, role, pages }
+ */
+const mapMeToUser = (backend: BackendMeResponse): User => ({
+  id: String(backend.id),
+  email: backend.email,
+  name: `${backend.firstName} ${backend.lastName}`.trim(),
+  firstName: backend.firstName,
+  lastName: backend.lastName,
+  roles: backend.roles.map(r => r.toLowerCase()),
+  role: backend.roles[0]?.toLowerCase(),
   avatar: null,
-}
-
-// Mock users database for credential validation
-const MOCK_USERS = [
-  { id: 1, username: 'admin', password: 'admin123', name: 'Admin User', email: 'admin@ecoa.com', role: 'admin' },
-  { id: 2, username: 'pm_user', password: 'pm1234', name: 'Project Manager', email: 'pm@ecoa.com', role: 'project_manager' },
-  { id: 3, username: 'designer_user', password: 'designer123', name: 'Study Designer', email: 'designer@ecoa.com', role: 'study_designer' },
-  { id: 4, username: 'reviewer_user', password: 'reviewer123', name: 'Build Reviewer', email: 'reviewer@ecoa.com', role: 'build_reviewer' },
-  { id: 5, username: 'uat_user', password: 'uat1234', name: 'UAT Member', email: 'uat@ecoa.com', role: 'uat_member' },
-  { id: 6, username: 'site_user', password: 'site1234', name: 'Site Manager', email: 'site@ecoa.com', role: 'site_manager' },
-  { id: 7, username: 'data_user', password: 'data1234', name: 'Data Manager', email: 'data@ecoa.com', role: 'data_manager' },
-]
-
-const MOCK_DELAY = 500
-
-const mockResponse = <T>(data: T): Promise<T> => {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(data), MOCK_DELAY)
-  })
-}
+  pages: backend.pages,
+})
 
 export const authApi = {
-  // Login with email/password
+  /**
+   * Login with email + password
+   * Endpoint: POST /v1/auth/signin
+   */
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    // TODO: Replace with actual API call
-    // return apiClient.post<LoginResponse>('/auth/login', credentials)
-
-    // Mock implementation - validate credentials
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const foundUser = MOCK_USERS.find(
-          u => u.username === credentials.username && u.password === credentials.password
-        )
-
-        if (foundUser) {
-          const user: User = {
-            id: String(foundUser.id),
-            email: foundUser.email,
-            name: foundUser.name,
-            firstName: foundUser.name.split(' ')[0],
-            lastName: foundUser.name.split(' ').slice(1).join(' '),
-            roles: [foundUser.role],
-            role: foundUser.role,
-            avatar: null,
-          }
-          resolve({
-            user,
-            token: `mock_token_${foundUser.id}_${Date.now()}`,
-          })
-        } else {
-          reject(new Error('Invalid username or password'))
-        }
-      }, MOCK_DELAY)
-    })
+    const backend = await apiClient.post<BackendSignInResponse>('/v1/auth/signin', credentials)
+    return mapSignInToLoginResponse(backend)
   },
 
-  // Login with Microsoft SSO
-  async loginWithMicrosoft(): Promise<LoginResponse> {
-    // TODO: Replace with actual API call
-    // return apiClient.post<LoginResponse>('/auth/microsoft', {})
-
-    // Mock implementation
-    return mockResponse<LoginResponse>({
-      user: MOCK_USER,
-      token: 'mock-jwt-token',
-    })
-  },
-
-  // Logout
-  async logout(): Promise<{ success: boolean }> {
-    // TODO: Replace with actual API call
-    // return apiClient.post('/auth/logout', {})
-
-    // Mock implementation
-    return mockResponse({ success: true })
-  },
-
-  // Get current user
+  /**
+   * Get current user's profile (requires valid token in Authorization header)
+   * Endpoint: GET /v1/auth/me
+   */
   async getCurrentUser(): Promise<User> {
-    // TODO: Replace with actual API call
-    // return apiClient.get<User>('/auth/me')
-
-    // Mock implementation - read from localStorage if available
-    const token = localStorage.getItem('auth_token')
-    if (!token) {
-      throw new Error('Not authenticated')
-    }
-
-    // Try to get user from localStorage (saved during login)
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser)
-        // Convert single role to roles array if needed
-        const user: User = {
-          id: String(parsedUser.id),
-          email: parsedUser.email,
-          name: parsedUser.name,
-          firstName: parsedUser.name?.split(' ')[0] || '',
-          lastName: parsedUser.name?.split(' ').slice(1).join(' ') || '',
-          roles: parsedUser.roles || (parsedUser.role ? [parsedUser.role] : []),
-          role: parsedUser.role,
-          avatar: parsedUser.avatar || null,
-        }
-        return mockResponse<User>(user)
-      } catch {
-        // Fall back to mock user
-      }
-    }
-
-    return mockResponse<User>(MOCK_USER)
+    const backend = await apiClient.get<BackendMeResponse>('/v1/auth/me')
+    return mapMeToUser(backend)
   },
 
-  // Refresh token
-  async refreshToken(): Promise<{ token: string }> {
-    // TODO: Replace with actual API call
-    // return apiClient.post('/auth/refresh', {})
-
-    return mockResponse({ token: 'new-mock-jwt-token' })
+  /**
+   * Logout — invalidates the refresh token on the server
+   * Endpoint: POST /v1/auth/logout
+   */
+  async logout(): Promise<{ success: boolean }> {
+    const refreshToken = localStorage.getItem('refresh_token')
+    if (refreshToken) {
+      await apiClient.post('/v1/auth/logout', { refreshToken })
+    }
+    return { success: true }
   },
 
-  // Request password reset
+  /**
+   * Refresh the access token using a stored refresh token
+   * Endpoint: POST /v1/auth/refresh
+   */
+  async refreshToken(): Promise<LoginResponse> {
+    const refreshToken = localStorage.getItem('refresh_token')
+    if (!refreshToken) {
+      throw new Error('No refresh token available')
+    }
+    const backend = await apiClient.post<BackendSignInResponse>('/v1/auth/refresh', { refreshToken })
+    return mapSignInToLoginResponse(backend)
+  },
+
+  /**
+   * Request password reset (not yet implemented in backend)
+   */
   async forgotPassword(email: string): Promise<ForgotPasswordResponse> {
-    // TODO: Replace with actual API call
-    // return apiClient.post<ForgotPasswordResponse>('/auth/forgot-password', { email })
+    return apiClient.post<ForgotPasswordResponse>('/v1/auth/forgot-password', { email })
+  },
 
-    return mockResponse<ForgotPasswordResponse>({
-      success: true,
-      message: 'Password reset email sent'
+  /**
+   * Reset password with token (not yet implemented in backend)
+   */
+  async resetPassword(token: string, newPassword: string): Promise<ForgotPasswordResponse> {
+    return apiClient.post<ForgotPasswordResponse>('/v1/auth/reset-password', { token, newPassword })
+  },
+
+  /**
+   * Get all users (SUPER_ADMIN only)
+   * Endpoint: GET /v1/auth/users
+   */
+  async getAllUsers(): Promise<User[]> {
+    const backendUsers = await apiClient.get<BackendUserSummary[]>('/v1/auth/users')
+    return backendUsers.map(u => ({
+      id: String(u.userId),
+      email: u.email,
+      name: `${u.firstName} ${u.lastName}`.trim(),
+      firstName: u.firstName,
+      lastName: u.lastName,
+      roles: u.roles.map(r => r.toLowerCase()),
+      role: u.roles[0]?.toLowerCase(),
+      avatar: null,
+      status: 'active' as const,
+    }))
+  },
+
+  /**
+   * Create a new user (public endpoint)
+   * Endpoint: POST /v1/auth/signup
+   *
+   * Note: Backend role names are mixed case in DB (ADMIN, project_manager, etc.)
+   * We map from frontend lowercase to exact DB names.
+   */
+  async createUser(data: {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+    role?: string
+  }): Promise<{ userId: number; email: string }> {
+    // Map frontend lowercase role to exact DB role name
+    const ROLE_NAME_MAP: Record<string, string> = {
+      admin: 'ADMIN',
+      project_manager: 'project_manager',
+      study_designer: 'study_designer',
+      build_reviewer: 'build_reviewer',
+      uat_member: 'uat_member',
+      site_manager: 'site_manager',
+      data_manager: 'data_manager',
+      super_admin: 'SUPER_ADMIN',
+    }
+    const dbRole = data.role ? (ROLE_NAME_MAP[data.role] || data.role) : undefined
+
+    return apiClient.post('/v1/auth/signup', {
+      firstName: data.firstName,
+      lastName: data.lastName || data.firstName,  // fallback if lastName is empty
+      username: data.email,
+      email: data.email,
+      password: data.password,
+      role: dbRole,
     })
   },
 
-  // Reset password with token
-  async resetPassword(token: string, newPassword: string): Promise<ForgotPasswordResponse> {
-    // TODO: Replace with actual API call
-    // return apiClient.post<ForgotPasswordResponse>('/auth/reset-password', { token, newPassword })
-
-    return mockResponse<ForgotPasswordResponse>({
-      success: true,
-      message: 'Password reset successful'
+  /**
+   * Impersonate another user (SUPER_ADMIN only)
+   * Endpoint: POST /v1/auth/impersonate
+   */
+  async impersonate(targetUsername: string, targetRole?: string): Promise<LoginResponse> {
+    const backend = await apiClient.post<BackendSignInResponse>('/v1/auth/impersonate', {
+      targetUsername,
+      targetRole,
     })
+    return mapSignInToLoginResponse(backend)
+  },
+
+  /**
+   * Get pending role approval requests (ADMIN / SUPER_ADMIN only)
+   * Endpoint: GET /v1/auth/approvals
+   */
+  async getPendingApprovals(): Promise<RoleApproval[]> {
+    return apiClient.get<RoleApproval[]>('/v1/auth/approvals')
+  },
+
+  /**
+   * Approve or reject a role approval request (ADMIN / SUPER_ADMIN only)
+   * Endpoint: POST /v1/auth/approvals/{id}/status?status=APPROVED|REJECTED
+   */
+  async updateApprovalStatus(id: number, status: 'APPROVED' | 'REJECTED'): Promise<void> {
+    return apiClient.post(`/v1/auth/approvals/${id}/status?status=${status}`, {})
   },
 }

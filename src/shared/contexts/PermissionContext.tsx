@@ -1,12 +1,11 @@
 import { createContext, useContext, ReactNode } from 'react'
-import { useCurrentUser, useLogin, useLoginWithMicrosoft, useLogout } from '../hooks/queries'
+import { useCurrentUser, useLogin, useLogout } from '../hooks/queries'
 import type { User, LoginCredentials, LoginResponse } from '../../types'
 
 interface PermissionContextValue {
   user: User | null
   loading: boolean
   login: (credentials: LoginCredentials) => Promise<LoginResponse>
-  loginWithMicrosoft: () => Promise<LoginResponse>
   logout: () => Promise<{ success: boolean }>
   refetchUser: () => void
   hasRole: (role: string) => boolean
@@ -35,15 +34,10 @@ export const PermissionProvider = ({ children }: PermissionProviderProps) => {
   })
 
   const loginMutation = useLogin()
-  const microsoftLoginMutation = useLoginWithMicrosoft()
   const logoutMutation = useLogout()
 
   const login = async (credentials: LoginCredentials): Promise<LoginResponse> => {
     return loginMutation.mutateAsync(credentials)
-  }
-
-  const loginWithMicrosoft = async (): Promise<LoginResponse> => {
-    return microsoftLoginMutation.mutateAsync()
   }
 
   const logout = async (): Promise<{ success: boolean }> => {
@@ -69,16 +63,15 @@ export const PermissionProvider = ({ children }: PermissionProviderProps) => {
     user: user || null,
     loading,
     login,
-    loginWithMicrosoft,
     logout,
     refetchUser,
     hasRole,
     hasAnyRole,
     hasAllRoles,
     isAuthenticated: !!user,
-    isLoggingIn: loginMutation.isPending || microsoftLoginMutation.isPending,
+    isLoggingIn: loginMutation.isPending,
     isLoggingOut: logoutMutation.isPending,
-    loginError: loginMutation.error || microsoftLoginMutation.error,
+    loginError: loginMutation.error,
   }
 
   return (

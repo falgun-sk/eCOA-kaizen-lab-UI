@@ -14,8 +14,10 @@ import { getAvailableRoles, USER_STATUS, getAllStatuses } from '../constants/rol
  */
 const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
+    password: '',
     role: '',
     status: USER_STATUS.ACTIVE
   })
@@ -48,11 +50,18 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
   const validateForm = () => {
     const newErrors = {}
 
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters'
+    // First name validation
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required'
+    } else if (formData.firstName.trim().length < 2) {
+      newErrors.firstName = 'First name must be at least 2 characters'
+    }
+
+    // Last name validation
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required'
+    } else if (formData.lastName.trim().length < 2) {
+      newErrors.lastName = 'Last name must be at least 2 characters'
     }
 
     // Email validation
@@ -60,6 +69,13 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
       newErrors.email = 'Email is required'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address'
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = 'Password is required'
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
     }
 
     // Role validation
@@ -84,8 +100,10 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
         await onSubmit(formData)
         // Reset form on success
         setFormData({
-          name: '',
+          firstName: '',
+          lastName: '',
           email: '',
+          password: '',
           role: '',
           status: USER_STATUS.ACTIVE
         })
@@ -107,8 +125,10 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
     if (!isSubmitting) {
       // Reset form
       setFormData({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
+        password: '',
         role: '',
         status: USER_STATUS.ACTIVE
       })
@@ -127,26 +147,48 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
         )}
 
-        {/* Name field */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
-            Name *
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleChange}
-            className={`w-full px-4 py-2.5 bg-white border ${
-              errors.name
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-gray-200 focus:border-orange-500 focus:ring-orange-500'
-            } rounded-xl text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0`}
-            placeholder="Enter full name"
-            disabled={isSubmitting}
-          />
-          {errors.name && <p className="mt-1.5 text-xs text-red-600">{errors.name}</p>}
+        {/* First Name and Last Name — side by side */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1.5">
+              First Name *
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              value={formData.firstName}
+              onChange={handleChange}
+              className={`w-full px-4 py-2.5 bg-white border ${
+                errors.firstName
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                  : 'border-gray-200 focus:border-orange-500 focus:ring-orange-500'
+              } rounded-xl text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0`}
+              placeholder="First name"
+              disabled={isSubmitting}
+            />
+            {errors.firstName && <p className="mt-1.5 text-xs text-red-600">{errors.firstName}</p>}
+          </div>
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1.5">
+              Last Name *
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              value={formData.lastName}
+              onChange={handleChange}
+              className={`w-full px-4 py-2.5 bg-white border ${
+                errors.lastName
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                  : 'border-gray-200 focus:border-orange-500 focus:ring-orange-500'
+              } rounded-xl text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0`}
+              placeholder="Last name"
+              disabled={isSubmitting}
+            />
+            {errors.lastName && <p className="mt-1.5 text-xs text-red-600">{errors.lastName}</p>}
+          </div>
         </div>
 
         {/* Email field */}
@@ -169,6 +211,28 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
             disabled={isSubmitting}
           />
           {errors.email && <p className="mt-1.5 text-xs text-red-600">{errors.email}</p>}
+        </div>
+
+        {/* Password field */}
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Password *
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            className={`w-full px-4 py-2.5 bg-white border ${
+              errors.password
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-200 focus:border-orange-500 focus:ring-orange-500'
+            } rounded-xl text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0`}
+            placeholder="Minimum 8 characters"
+            disabled={isSubmitting}
+          />
+          {errors.password && <p className="mt-1.5 text-xs text-red-600">{errors.password}</p>}
         </div>
 
         {/* Role field */}

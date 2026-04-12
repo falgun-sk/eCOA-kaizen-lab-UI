@@ -18,7 +18,7 @@ import StatusBadge from './StatusBadge'
  * @param {function} onViewPermissions - Callback when view permissions button clicked
  * @param {boolean} isLoading - Loading state
  */
-const UserTable = ({ users, onEdit, onDelete, onViewPermissions, isLoading, isAdmin = true }) => {
+const UserTable = ({ users, onEdit, onDelete, onViewPermissions, onImpersonate, isLoading, isAdmin = true }) => {
   // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) {
@@ -215,6 +215,27 @@ const UserTable = ({ users, onEdit, onDelete, onViewPermissions, isLoading, isAd
                     </svg>
                     Permissions
                   </button>
+                  {isAdmin && onImpersonate && (
+                    <button
+                      onClick={() => onImpersonate(user)}
+                      className="inline-flex items-center px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-medium rounded-lg transition-all duration-200 hover:shadow-sm"
+                    >
+                      <svg
+                        className="w-4 h-4 mr-1.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                      Login as
+                    </button>
+                  )}
                   {isAdmin && onEdit && (
                     <button
                       onClick={() => onEdit(user)}

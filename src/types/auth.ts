@@ -2,6 +2,8 @@
  * Authentication Types
  */
 
+// ─── Frontend types (used throughout the app) ───
+
 export interface User {
   id: string
   email: string
@@ -14,6 +16,7 @@ export interface User {
   status?: 'active' | 'inactive'
   lastLogin?: string
   createdAt?: string
+  pages?: string[]
 }
 
 export interface LoginCredentials {
@@ -24,6 +27,7 @@ export interface LoginCredentials {
 export interface LoginResponse {
   user: User
   token: string
+  refreshToken: string
 }
 
 export interface AuthState {
@@ -43,4 +47,54 @@ export interface ForgotPasswordResponse {
 export interface ResetPasswordRequest {
   token: string
   newPassword: string
+}
+
+// ─── Backend API types (match what Spring Boot sends) ───
+
+/** The wrapper every backend endpoint returns */
+export interface BackendApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
+  error: { code: string; message: string } | null
+}
+
+/** What POST /v1/auth/signin returns inside "data" */
+export interface BackendSignInResponse {
+  accessToken: string
+  refreshToken: string
+  tokenType: string
+  expiresIn: number
+  user: BackendUserSummary
+}
+
+/** User object as the backend shapes it */
+export interface BackendUserSummary {
+  userId: number
+  firstName: string
+  lastName: string
+  username: string
+  email: string
+  roles: string[]
+}
+
+/** What GET /v1/auth/me returns inside "data" */
+export interface BackendMeResponse {
+  id: number
+  username: string
+  email: string
+  firstName: string
+  lastName: string
+  roles: string[]
+  pages: string[]
+}
+
+/** What GET /v1/auth/approvals returns inside "data" */
+export interface RoleApproval {
+  id: number
+  username: string
+  email: string
+  requestedRole: string
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  createdAt: string
 }

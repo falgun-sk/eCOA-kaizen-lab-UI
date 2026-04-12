@@ -32,19 +32,7 @@ export const useLogin = () => {
     mutationFn: (credentials) => authApi.login(credentials),
     onSuccess: (data) => {
       localStorage.setItem('auth_token', data.token)
-      queryClient.setQueryData(authKeys.user(), data.user)
-    },
-  })
-}
-
-// Microsoft SSO login mutation
-export const useLoginWithMicrosoft = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation<LoginResponse, Error, void>({
-    mutationFn: () => authApi.loginWithMicrosoft(),
-    onSuccess: (data) => {
-      localStorage.setItem('auth_token', data.token)
+      localStorage.setItem('refresh_token', data.refreshToken)
       queryClient.setQueryData(authKeys.user(), data.user)
     },
   })
@@ -58,6 +46,8 @@ export const useLogout = () => {
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
       localStorage.removeItem('auth_token')
+      localStorage.removeItem('refresh_token')
+      localStorage.removeItem('user')
       queryClient.setQueryData(authKeys.user(), null)
       queryClient.clear()
     },

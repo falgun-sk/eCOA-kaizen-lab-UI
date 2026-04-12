@@ -17,4 +17,14 @@ export default defineConfig({
       '@types': path.resolve(__dirname, './src/types'),
     },
   },
+  server: {
+    // Proxy: forward /api requests from Vite dev server to the Spring Boot backend
+    // This avoids CORS issues during development
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+      },
+    },
+  },
 })

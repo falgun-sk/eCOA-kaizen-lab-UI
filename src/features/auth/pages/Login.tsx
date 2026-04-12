@@ -40,7 +40,9 @@ const Login = () => {
     const newErrors: FormErrors = {}
 
     if (!formData.username) {
-      newErrors.username = 'Username is required'
+      newErrors.username = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.username)) {
+      newErrors.username = 'Please enter a valid email address'
     }
 
     if (!formData.password) {
@@ -64,8 +66,9 @@ const Login = () => {
         const response = await authApi.login(formData)
         console.log('Login successful:', response)
 
-        // Store with consistent key names used by PermissionContext
+        // Store tokens and user data
         localStorage.setItem('auth_token', response.token)
+        localStorage.setItem('refresh_token', response.refreshToken)
 
         if (response.user) {
           localStorage.setItem('user', JSON.stringify(response.user))
@@ -124,22 +127,22 @@ const Login = () => {
                 <p className="text-sm text-red-600">{errors.general}</p>
               </div>
             )}
-            {/* Username Field */}
+            {/* Email Field */}
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Username
+                Email
               </label>
               <input
                 id="username"
                 name="username"
-                type="text"
-                autoComplete="username"
+                type="email"
+                autoComplete="email"
                 value={formData.username}
                 onChange={handleChange}
                 className={`w-full px-4 py-2.5 bg-white border ${
                   errors.username ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-orange-500 focus:ring-orange-500'
                 } rounded-xl text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0`}
-                placeholder="Enter your username"
+                placeholder="Enter your email"
               />
               {errors.username && (
                 <p className="mt-1.5 text-xs text-red-600">{errors.username}</p>
