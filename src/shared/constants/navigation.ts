@@ -56,47 +56,11 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     roles: ['admin', 'project_manager']
   },
   {
-    id: 'reviews',
-    label: 'Reviews',
-    path: '/reviews',
-    icon: 'reviews',
-    roles: ['build_reviewer']
-  },
-  {
-    id: 'uat',
-    label: 'UAT Testing',
-    path: '/uat',
-    icon: 'testing',
-    roles: ['uat_member']
-  },
-  {
-    id: 'sites',
-    label: 'Sites',
-    path: '/sites',
-    icon: 'sites',
-    roles: ['site_manager']
-  },
-  {
-    id: 'devices',
-    label: 'Devices',
-    path: '/devices',
-    icon: 'devices',
-    roles: ['site_manager']
-  },
-  {
     id: 'access',
     label: 'Access',
     path: '/access',
     icon: 'access',
     roles: ['admin', 'project_manager']
-  },
-  {
-    id: 'data',
-    label: 'Data Management',
-    path: '/data',
-    icon: 'data',
-    roles: ['data_manager'],
-    badge: 'Phase 2'
   },
   {
     id: 'reports',
@@ -109,16 +73,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
 
 /**
  * Curated navigation for super_admin — clean, no duplicates
+ * Only includes pages that have actual routes built
  */
 const SUPER_ADMIN_NAVIGATION: NavigationItem[] = [
   { id: 'dashboard', label: 'Home', path: '/dashboard', icon: 'dashboard', roles: [] },
   { id: 'studies', label: 'Studies', path: '/studies', icon: 'studies', roles: [] },
   { id: 'designer_studies', label: 'Designer Studio', path: '/designer/dashboard', icon: 'forms', roles: [] },
   { id: 'tasks', label: 'Tasks', path: '/tasks', icon: 'tasks', roles: [] },
-  { id: 'reviews', label: 'Reviews', path: '/reviews', icon: 'reviews', roles: [] },
-  { id: 'uat', label: 'UAT Testing', path: '/uat', icon: 'testing', roles: [] },
-  { id: 'sites', label: 'Sites', path: '/sites', icon: 'sites', roles: [] },
-  { id: 'devices', label: 'Devices', path: '/devices', icon: 'devices', roles: [] },
   { id: 'access', label: 'Access', path: '/access', icon: 'access', roles: [] },
   { id: 'reports', label: 'Reports', path: '/reports', icon: 'reports', roles: [] },
 ]

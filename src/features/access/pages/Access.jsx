@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import toast from 'react-hot-toast'
 import { authApi } from '../../../shared/services/api'
 import { getAllRoles, getAllStatuses, ROLES } from '../constants/roles'
 import UserTable from '../components/UserTable'
@@ -26,6 +27,8 @@ const Access = () => {
   const isAdmin = user?.role === ROLES.ADMIN
     || user?.roles?.includes(ROLES.ADMIN)
     || user?.roles?.includes('super_admin')
+  // Only SUPER_ADMIN can call GET /v1/auth/users and POST /v1/auth/impersonate
+  const isSuperAdmin = user?.roles?.includes('super_admin') || user?.role === 'super_admin'
 
   // Tab state
   const [activeTab, setActiveTab] = useState('users') // 'users' or 'permissions'
@@ -58,21 +61,29 @@ const Access = () => {
   const allRoles = getAllRoles()
   const allStatuses = getAllStatuses()
 
-  // Fetch users on mount
+  // Fetch users once user data is loaded (need to know if SUPER_ADMIN)
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    if (user) {
+      fetchUsers()
+    }
+  }, [user])
 
   // Fetch users function — calls GET /v1/auth/users (SUPER_ADMIN only)
   const fetchUsers = async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await authApi.getAllUsers()
-      setUsers(data)
+      if (isSuperAdmin) {
+        const data = await authApi.getAllUsers()
+        setUsers(data)
+      } else {
+        // Non-SUPER_ADMIN can't list users — show empty state
+        setUsers([])
+        setError('User list is only available for Super Admins. You can still add users.')
+      }
     } catch (err) {
       console.error('Error fetching users:', err)
-      setError(err.message || 'Failed to load users')
+      setError(typeof err?.message === 'string' ? err.message : 'Failed to load users')
       setUsers([])
     } finally {
       setIsLoading(false)
@@ -125,31 +136,35 @@ const Access = () => {
   const handleAddUser = async (userData) => {
     try {
       await authApi.createUser({
-        firstName: userData.name.split(' ')[0] || userData.name,
-        lastName: userData.name.split(' ').slice(1).join(' ') || '',
+        firstName: userData.firstName,
+        lastName: userData.lastName,
         email: userData.email,
         password: userData.password,
         role: userData.role,
       })
-      // Refresh the list to show the new user
-      await fetchUsers()
+      toast.success(`User ${userData.firstName} ${userData.lastName} created successfully!`)
+      // Refresh the list if SUPER_ADMIN (only they can see the list)
+      if (isSuperAdmin) {
+        await fetchUsers()
+      }
       setShowAddModal(false)
     } catch (error) {
       console.error('Error adding user:', error)
-      throw error
+      toast.error(typeof error?.message === 'string' ? error.message : 'Failed to add user')
+      throw new Error(typeof error?.message === 'string' ? error.message : 'Failed to add user')
     }
   }
 
   // Handle edit user (backend API not available yet)
   const handleEditUser = async (userId, userData) => {
-    alert('Edit user API is not available yet. Ask Aman to build PUT /v1/auth/users/:id')
+    toast.error('Edit user API is not available yet.')
     setShowEditModal(false)
     setSelectedUser(null)
   }
 
   // Handle delete user (backend API not available yet)
   const handleDeleteUser = async () => {
-    alert('Delete user API is not available yet. Ask Aman to build DELETE /v1/auth/users/:id')
+    toast.error('Delete user API is not available yet.')
     setShowDeleteModal(false)
     setSelectedUser(null)
   }
@@ -158,6 +173,7 @@ const Access = () => {
   const handleImpersonate = async (targetUser) => {
     try {
       const response = await authApi.impersonate(targetUser.email)
+      toast.success(`Switching to ${targetUser.name}...`)
       // Store new tokens
       localStorage.setItem('auth_token', response.token)
       localStorage.setItem('refresh_token', response.refreshToken)
@@ -166,7 +182,7 @@ const Access = () => {
       window.location.href = '/dashboard'
     } catch (error) {
       console.error('Error impersonating user:', error)
-      alert('Failed to impersonate: ' + error.message)
+      toast.error('Failed to impersonate: ' + (typeof error?.message === 'string' ? error.message : 'Unknown error'))
     }
   }
 
@@ -448,7 +464,7 @@ const Access = () => {
               onEdit={isAdmin ? openEditModal : null}
               onDelete={isAdmin ? openDeleteModal : null}
               onViewPermissions={openPermissionsModal}
-              onImpersonate={isAdmin ? handleImpersonate : null}
+              onImpersonate={isSuperAdmin ? handleImpersonate : null}
               isLoading={isLoading}
               isAdmin={isAdmin}
             />

@@ -133,6 +133,9 @@ export const authApi = {
   /**
    * Create a new user (public endpoint)
    * Endpoint: POST /v1/auth/signup
+   *
+   * Note: Backend role names are mixed case in DB (ADMIN, project_manager, etc.)
+   * We map from frontend lowercase to exact DB names.
    */
   async createUser(data: {
     firstName: string
@@ -141,13 +144,26 @@ export const authApi = {
     password: string
     role?: string
   }): Promise<{ userId: number; email: string }> {
+    // Map frontend lowercase role to exact DB role name
+    const ROLE_NAME_MAP: Record<string, string> = {
+      admin: 'ADMIN',
+      project_manager: 'project_manager',
+      study_designer: 'study_designer',
+      build_reviewer: 'build_reviewer',
+      uat_member: 'uat_member',
+      site_manager: 'site_manager',
+      data_manager: 'data_manager',
+      super_admin: 'SUPER_ADMIN',
+    }
+    const dbRole = data.role ? (ROLE_NAME_MAP[data.role] || data.role) : undefined
+
     return apiClient.post('/v1/auth/signup', {
       firstName: data.firstName,
-      lastName: data.lastName,
+      lastName: data.lastName || data.firstName,  // fallback if lastName is empty
       username: data.email,
       email: data.email,
       password: data.password,
-      role: data.role,
+      role: dbRole,
     })
   },
 
