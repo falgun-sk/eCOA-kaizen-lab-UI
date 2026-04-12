@@ -15,7 +15,7 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps) => {
   const location = useLocation()
   const { user } = usePermission()
 
-  const navigationItems = user ? getNavigationForRole(user.role || '') : []
+  const navigationItems = user ? getNavigationForRole(user.roles || user.role || '') : []
 
   const isActive = (path: string): boolean => location.pathname === path
 

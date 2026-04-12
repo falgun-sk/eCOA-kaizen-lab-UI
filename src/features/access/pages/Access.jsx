@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { usersApi } from '../../../shared/services/api'
-import { getMockUsers, createMockUser, updateMockUser, deleteMockUser } from '../data/mockUsers'
+import { authApi } from '../../../shared/services/api'
 import { getAllRoles, getAllStatuses, ROLES } from '../constants/roles'
 import UserTable from '../components/UserTable'
 import Pagination from '../../../shared/components/Pagination'
@@ -23,7 +22,10 @@ import useAuth from '../../../shared/hooks/useAuth'
 const Access = () => {
   // Get current user
   const { user } = useAuth()
+  // Check both single role and roles array for admin/super_admin
   const isAdmin = user?.role === ROLES.ADMIN
+    || user?.roles?.includes(ROLES.ADMIN)
+    || user?.roles?.includes('super_admin')
 
   // Tab state
   const [activeTab, setActiveTab] = useState('users') // 'users' or 'permissions'
@@ -61,16 +63,16 @@ const Access = () => {
     fetchUsers()
   }, [])
 
-  // Fetch users function
+  // Fetch users function — calls GET /v1/auth/users (SUPER_ADMIN only)
   const fetchUsers = async () => {
     setIsLoading(true)
     setError(null)
     try {
-      // Use mock data directly for now
-      const mockData = getMockUsers()
-      setUsers(mockData)
+      const data = await authApi.getAllUsers()
+      setUsers(data)
     } catch (err) {
       console.error('Error fetching users:', err)
+      setError(err.message || 'Failed to load users')
       setUsers([])
     } finally {
       setIsLoading(false)
@@ -119,18 +121,18 @@ const Access = () => {
     return () => clearTimeout(timer)
   }, [searchQuery])
 
-  // Handle add user
+  // Handle add user — calls POST /v1/auth/signup
   const handleAddUser = async (userData) => {
     try {
-      // Try API first
-      try {
-        const newUser = await usersApi.createUser(userData)
-        setUsers([newUser, ...users])
-      } catch (apiError) {
-        // Fallback to mock data
-        const newUser = createMockUser(userData)
-        setUsers([newUser, ...users])
-      }
+      await authApi.createUser({
+        firstName: userData.name.split(' ')[0] || userData.name,
+        lastName: userData.name.split(' ').slice(1).join(' ') || '',
+        email: userData.email,
+        password: userData.password,
+        role: userData.role,
+      })
+      // Refresh the list to show the new user
+      await fetchUsers()
       setShowAddModal(false)
     } catch (error) {
       console.error('Error adding user:', error)
@@ -138,51 +140,33 @@ const Access = () => {
     }
   }
 
-  // Handle edit user
+  // Handle edit user (backend API not available yet)
   const handleEditUser = async (userId, userData) => {
-    try {
-      // Try API first
-      try {
-        const updatedUser = await usersApi.updateUser(userId, userData)
-        // Merge updated data with existing user to preserve all fields
-        setUsers(users.map((u) => (u.id === userId ? { ...u, ...updatedUser, ...userData } : u)))
-      } catch (apiError) {
-        // Fallback to mock data
-        const updatedUser = updateMockUser(userId, userData)
-        if (updatedUser) {
-          setUsers(users.map((u) => (u.id === userId ? { ...u, ...updatedUser, ...userData } : u)))
-        } else {
-          // If updateMockUser returns null, just update with the form data
-          setUsers(users.map((u) => (u.id === userId ? { ...u, ...userData } : u)))
-        }
-      }
-      setShowEditModal(false)
-      setSelectedUser(null)
-    } catch (error) {
-      console.error('Error updating user:', error)
-      throw error
-    }
+    alert('Edit user API is not available yet. Ask Aman to build PUT /v1/auth/users/:id')
+    setShowEditModal(false)
+    setSelectedUser(null)
   }
 
-  // Handle delete user
+  // Handle delete user (backend API not available yet)
   const handleDeleteUser = async () => {
-    if (!selectedUser) return
+    alert('Delete user API is not available yet. Ask Aman to build DELETE /v1/auth/users/:id')
+    setShowDeleteModal(false)
+    setSelectedUser(null)
+  }
 
+  // Handle impersonate — SUPER_ADMIN logs in as another user
+  const handleImpersonate = async (targetUser) => {
     try {
-      // Try API first
-      try {
-        await usersApi.deleteUser(selectedUser.id)
-        setUsers(users.filter((u) => u.id !== selectedUser.id))
-      } catch (apiError) {
-        // Fallback to mock data
-        deleteMockUser(selectedUser.id)
-        setUsers(users.filter((u) => u.id !== selectedUser.id))
-      }
-      setShowDeleteModal(false)
-      setSelectedUser(null)
+      const response = await authApi.impersonate(targetUser.email)
+      // Store new tokens
+      localStorage.setItem('auth_token', response.token)
+      localStorage.setItem('refresh_token', response.refreshToken)
+      localStorage.setItem('user', JSON.stringify(response.user))
+      // Reload to reinitialize with new user's session
+      window.location.href = '/dashboard'
     } catch (error) {
-      console.error('Error deleting user:', error)
-      throw error
+      console.error('Error impersonating user:', error)
+      alert('Failed to impersonate: ' + error.message)
     }
   }
 
@@ -464,6 +448,7 @@ const Access = () => {
               onEdit={isAdmin ? openEditModal : null}
               onDelete={isAdmin ? openDeleteModal : null}
               onViewPermissions={openPermissionsModal}
+              onImpersonate={isAdmin ? handleImpersonate : null}
               isLoading={isLoading}
               isAdmin={isAdmin}
             />

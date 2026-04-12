@@ -16,6 +16,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
     role: '',
     status: USER_STATUS.ACTIVE
   })
@@ -62,6 +63,13 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
       newErrors.email = 'Please enter a valid email address'
     }
 
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = 'Password is required'
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
+    }
+
     // Role validation
     if (!formData.role) {
       newErrors.role = 'Role is required'
@@ -86,6 +94,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
         setFormData({
           name: '',
           email: '',
+          password: '',
           role: '',
           status: USER_STATUS.ACTIVE
         })
@@ -169,6 +178,28 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }) => {
             disabled={isSubmitting}
           />
           {errors.email && <p className="mt-1.5 text-xs text-red-600">{errors.email}</p>}
+        </div>
+
+        {/* Password field */}
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Password *
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            className={`w-full px-4 py-2.5 bg-white border ${
+              errors.password
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-200 focus:border-orange-500 focus:ring-orange-500'
+            } rounded-xl text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0`}
+            placeholder="Minimum 8 characters"
+            disabled={isSubmitting}
+          />
+          {errors.password && <p className="mt-1.5 text-xs text-red-600">{errors.password}</p>}
         </div>
 
         {/* Role field */}
