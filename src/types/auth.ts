@@ -88,3 +88,13 @@ export interface BackendMeResponse {
   roles: string[]
   pages: string[]
 }
+
+/** What GET /v1/auth/approvals returns inside "data" */
+export interface RoleApproval {
+  id: number
+  username: string
+  email: string
+  requestedRole: string
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  createdAt: string
+}

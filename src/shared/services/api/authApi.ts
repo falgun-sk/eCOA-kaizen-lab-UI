@@ -12,6 +12,7 @@ import type {
   BackendSignInResponse,
   BackendMeResponse,
   BackendUserSummary,
+  RoleApproval,
 } from '../../../types'
 
 /**
@@ -177,5 +178,21 @@ export const authApi = {
       targetRole,
     })
     return mapSignInToLoginResponse(backend)
+  },
+
+  /**
+   * Get pending role approval requests (ADMIN / SUPER_ADMIN only)
+   * Endpoint: GET /v1/auth/approvals
+   */
+  async getPendingApprovals(): Promise<RoleApproval[]> {
+    return apiClient.get<RoleApproval[]>('/v1/auth/approvals')
+  },
+
+  /**
+   * Approve or reject a role approval request (ADMIN / SUPER_ADMIN only)
+   * Endpoint: POST /v1/auth/approvals/{id}/status?status=APPROVED|REJECTED
+   */
+  async updateApprovalStatus(id: number, status: 'APPROVED' | 'REJECTED'): Promise<void> {
+    return apiClient.post(`/v1/auth/approvals/${id}/status?status=${status}`, {})
   },
 }
